@@ -1,30 +1,7 @@
 import java.io.*;
-// import java.util.StringTokenizer;
-// import java.util.HashMap;
 
 public class MimeTypesTest {
   public static void main( String[] args) throws FileNotFoundException {
-
-    // String line = "application/andrew-inset   ez pz px xp";
-    // String test, mimeType, extension;
-    
-    // HashMap<String, String> types;
-    // types = new HashMap<String, String>();
-
-    // StringTokenizer tokens = new StringTokenizer( line );
-
-    // mimeType = tokens.nextToken();
-
-    // while (tokens.hasMoreTokens()) {
-    //   extension = tokens.nextToken();
-    //   types.put( extension, mimeType );
-    // }
-
-    // for (String pairs : types.keySet()) {
-    //   String key = pairs.toString();
-    //   String value = types.get(pairs).toString();
-    //   System.out.println( "key: " + key + " " + "value: " + value ); 
-    // }
 
     MimeTypes configuration = null;
 
