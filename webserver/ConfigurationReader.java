@@ -24,5 +24,5 @@ public abstract class ConfigurationReader {
     return reader.readLine();
   }
   
-  abstract void load();
+  abstract void load() throws IOException;
 }
