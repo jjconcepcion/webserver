@@ -13,7 +13,7 @@ public class HttpdConfTest {
     
     try {
       configuration.load();
-      System.out.println( "\n>>>Coniguration loaded successfully" );
+      System.out.println( "\n>>>Coniguration loaded without error" );
     } catch ( IOException e) {
       System.out.println("Failed to load configuration:" + e);
       System.exit(0);

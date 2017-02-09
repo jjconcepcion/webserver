@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.StringTokenizer;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -21,19 +22,43 @@ public class HttpdConf extends ConfigurationReader {
     
     while( hasMoreLines() ) {
       line = nextLine();
-      
-      if( line.startsWith( "#") ) {
+      if( line.startsWith( "#" ) ) {
         continue;
       }
-      
-      
-      
+      parseDirective( line );
     }
   }
   
-  /*
-  * Accessor Methods
-  */
+  private void parseDirective( String line ) {
+    StringTokenizer tokens = new StringTokenizer( line );
+    String directive, urlPath, directoryPath;
+    
+    directive = tokens.nextToken();
+    switch( directive ) {
+      case "Alias": 
+        urlPath = tokens.nextToken();
+        directoryPath = tokens.nextToken().replace("\"","");
+        aliases.put( urlPath, directoryPath );
+        break;
+      case "ScriptAlias": 
+        urlPath = tokens.nextToken();
+        directoryPath = tokens.nextToken().replace("\"","");
+        scriptAliases.put( urlPath, directoryPath );
+        break;
+      case "ServerRoot":
+        serverRoot = tokens.nextToken().replace("\"","");
+        break;
+      case "DocumentRoot": 
+        documentRoot = tokens.nextToken().replace("\"","");
+        break;
+      case "Listen":
+        listen = Integer.parseInt( tokens.nextToken() );
+        break;
+      case "LogFile":
+        logFile = tokens.nextToken().replace("\"","");
+        break;
+    }
+  }
   
   public String lookupAlias( String urlPath ) {
     return aliases.get( urlPath );
@@ -42,7 +67,7 @@ public class HttpdConf extends ConfigurationReader {
   public String lookupScriptAlias( String urlPath ) {
     return scriptAliases.get( urlPath );
   }
-  
+
   public String getServerRoot() {
     return serverRoot;
   }
@@ -58,6 +83,4 @@ public class HttpdConf extends ConfigurationReader {
   public String getLogFile() {
     return logFile;
   }
-  
-  
 }
