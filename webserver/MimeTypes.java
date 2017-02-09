@@ -27,7 +27,7 @@ public class MimeTypes extends ConfigurationReader {
   public void parse( String line ) {
     StringTokenizer tokens = new StringTokenizer( line );
     String mimeType, extension;
-    
+
     mimeType = tokens.nextToken();
 
     while ( tokens.hasMoreTokens() ) {
@@ -40,6 +40,8 @@ public class MimeTypes extends ConfigurationReader {
     return types.get( extension );
   }
 
+  // For testing only
+  
   public void printHashMap() {
     for ( String key : types.keySet() ) {
       String mimeType = key.toString();
