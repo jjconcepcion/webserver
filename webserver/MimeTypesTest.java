@@ -20,7 +20,13 @@ public class MimeTypesTest {
       System.exit(0);
     }
 
-    System.out.println( ">>>Printing out all MIME types and Extensions<<<");
+    System.out.println( ">>>Printing out all MIME types and Extensions<<<" );
     configuration.printHashMap();
+
+    System.out.println( "Testing lookup..." );
+    System.out.println( "Looking up extension 'jpeg' " );
+    System.out.println( configuration.lookup( "jpeg" ) ) ;
+
+
   }
 } 
