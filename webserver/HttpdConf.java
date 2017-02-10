@@ -1,20 +1,25 @@
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.LinkedList;
+import java.util.ListIterator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class HttpdConf extends ConfigurationReader {
   private HashMap<String,String> aliases;
   private HashMap<String,String> scriptAliases;
+  private LinkedList<String> directoryIndex;
   private String serverRoot;
   private String documentRoot;
   private int listen;
   private String logFile;
+  private String accessFileName = ".htaccess";
   
   public HttpdConf( String fileName ) throws FileNotFoundException {
     super( fileName );
     aliases = new HashMap<String,String>();
     scriptAliases = new HashMap<String,String>();
+    directoryIndex = new LinkedList<String>();
   }
   
   public void load() throws IOException {
@@ -22,7 +27,7 @@ public class HttpdConf extends ConfigurationReader {
     
     while( hasMoreLines() ) {
       line = nextLine();
-      if( line.startsWith( "#" ) ) {
+      if( line.startsWith( "#" ) || line.isEmpty() ) {
         continue;
       }
       parseDirective( line );
@@ -45,6 +50,12 @@ public class HttpdConf extends ConfigurationReader {
         directoryPath = tokens.nextToken().replace("\"","");
         scriptAliases.put( urlPath, directoryPath );
         break;
+      case "DirectoryIndex":
+        while( tokens.hasMoreTokens() ) {
+          urlPath = tokens.nextToken().replace("\n","");
+          directoryIndex.add( urlPath );
+        }
+        break;
       case "ServerRoot":
         serverRoot = tokens.nextToken().replace("\"","");
         break;
@@ -56,6 +67,9 @@ public class HttpdConf extends ConfigurationReader {
         break;
       case "LogFile":
         logFile = tokens.nextToken().replace("\"","");
+        break;
+      case "AccessFileName":
+        accessFileName = tokens.nextToken().replace("\"","");
         break;
     }
   }
@@ -82,5 +96,13 @@ public class HttpdConf extends ConfigurationReader {
   
   public String getLogFile() {
     return logFile;
+  }
+  
+  public String getAccessFileName() {
+    return accessFileName;
+  }
+  
+  public ListIterator<String> getDirectoryIndexes() {
+    return directoryIndex.listIterator( 0 );
   }
 }

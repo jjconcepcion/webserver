@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ListIterator;
 
 public class HttpdConfTest {
   public static void main(String[] args) throws FileNotFoundException {
@@ -27,12 +28,16 @@ public class HttpdConfTest {
     System.out.println( configuration.getListenPort() );
     System.out.println( "\n>>>Display log file path" );
     System.out.println( configuration.getLogFile() );
+    System.out.println( "\n>>>Display access filename (default: .htaccess)" );
+    System.out.println( configuration.getAccessFileName() );
     String alias = "/ab/";
     System.out.println( "\n>>>Resolve alias " + "\"" + alias + "\"");
     System.out.println( configuration.lookupAlias( alias ) );
     String scriptAlias = "/cgi-bin/";
     System.out.println( "\n>>>Resolve script alias " + "\"" + scriptAlias + "\"");
     System.out.println( configuration.lookupScriptAlias( scriptAlias ) );
-    
+    System.out.println( "\n>>>Display directory indexes" );
+    ListIterator<String> indexes = configuration.getDirectoryIndexes();
+    indexes.forEachRemaining( System.out::println );
   }
 }
