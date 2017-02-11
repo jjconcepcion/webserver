@@ -16,10 +16,15 @@ public class RequestTest {
     
     printStartLine( request );
     
-    if( request.lookupHeader( "Content-Length") == null ) {
-      System.out.println( "Request has no body" );
+    
+    System.out.println( "\n>>Displaying Host header" );
+    printHeader( request, "Host" );
+    
+    if( request.hasBody() ) {
+      System.out.println( "\n>>Displaying request body as UTF-8 string" );
+      System.out.println( new String( request.getBody(), "UTF-8" ) );
     } else {
-      System.out.println( "Request has a body" );
+      System.out.println( "\n>>Request has no body" );
     }
       
     
@@ -30,5 +35,9 @@ public class RequestTest {
     System.out.println( ">>Displaying request start line:" );
     System.out.print( request.getVerb() + " " + request.getUri() + " " );
     System.out.println( request.getHttpVersion() );
+  }
+  
+  public static void printHeader( Request request, String header ) {
+    System.out.println( header + ": " + request.lookupHeader( header ) );
   }
 }

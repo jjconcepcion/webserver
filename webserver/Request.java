@@ -8,7 +8,7 @@ public class Request {
   private String verb;
   private String httpVersion;
   private InputStream inputStream;
-  //private Type body;
+  private byte[] body;
   
   public Request( InputStream clientInputStream ) {
     headers = new HashMap<String,String>();
@@ -23,7 +23,6 @@ public class Request {
     );
     
     line = reader.readLine();
-    System.out.println( line );
     parseStartLine( line );
     
     while( true ) {
@@ -34,6 +33,10 @@ public class Request {
       }
       
       parseHeader( line );
+    }
+    
+    if( hasBody() ) {
+      parseBody();
     }
   }
   
@@ -55,6 +58,13 @@ public class Request {
     headers.put( header, value );
   }
   
+  private void parseBody() throws IOException {
+    int byteSize = Integer.parseInt( lookupHeader( "Content-Length") );
+    body = new byte[byteSize];
+    
+    inputStream.read( body, 0, byteSize );
+  }
+  
   public String getUri() {
     return uri;
   }
@@ -71,4 +81,11 @@ public class Request {
     return headers.get( header );
   }
   
+  public Boolean hasBody() {
+    return lookupHeader( "Content-Length" ) != null;
+  }
+  
+  public byte[] getBody() {
+    return body;
+  }
 }
