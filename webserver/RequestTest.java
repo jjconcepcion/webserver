@@ -16,11 +16,12 @@ public class RequestTest {
     
     printStartLine( request );
     
-    int contentLength = Integer.parseInt( 
-      request.lookupHeader( "ContentLength" )
-    );
-    
-    System.out.println( "Request has body = " + ( contentLength > 0 ));
+    if( request.lookupHeader( "Content-Length") == null ) {
+      System.out.println( "Request has no body" );
+    } else {
+      System.out.println( "Request has a body" );
+    }
+      
     
     client.close();
   }
