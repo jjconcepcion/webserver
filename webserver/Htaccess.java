@@ -25,10 +25,6 @@ public class Htaccess extends ConfigurationReader {
     }
   }
 
-  public boolean isAuthorized( String username, String password ) {
-    return true;
-  }
-
   public void parse( String line ) throws FileNotFoundException {
     StringTokenizer tokens = new StringTokenizer( line );
     String directive;
@@ -39,6 +35,14 @@ public class Htaccess extends ConfigurationReader {
       case "AuthUserFile": 
         authUserFilePath = tokens.nextToken().replace( "\"", "" ); 
         userFile = new Htpassword( authUserFilePath );
+
+      try {
+        userFile.load();
+      } catch ( IOException e ) {
+        System.exit(0);
+      }
+
+
         break;
       case "AuthType":
         authType = tokens.nextToken();
@@ -55,6 +59,11 @@ public class Htaccess extends ConfigurationReader {
         break;
     }
   }
+
+  public boolean isAuthorized( String username, String password ) {
+    return (userFile.isAuthorized( username, password) );
+  }
+
   public String getAuthUserFilePath() {
     return authUserFilePath;
 
