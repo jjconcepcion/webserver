@@ -27,9 +27,7 @@ public class HtaccessTest {
     System.out.println( htaccess.getAuthName() );
     System.out.println( ">>> Printing out Require <<<" );
     System.out.println( htaccess.getRequire() );
-
-    // System.out.println( ">>> Testing isAuthorized <<<" );
-    // System.out.println( htaccess.isAuthorized( "jrob" , 
-    //   "{SHA}cRDtpNCeBiql5KOQsKVyrA0sAiA=" ) );
+    System.out.println( ">>> Testing isAuthorized() <<< " );
+    System.out.println( htaccess.isAuthorized( "jrob", "{SHA}cRDtpNCeBiql5KOQsKVyrA0sAiA=" ) );
   }
 }
