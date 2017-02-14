@@ -44,7 +44,6 @@ public class MimeTypes extends ConfigurationReader {
   
   public void printHashMap() {
     for ( String key : types.keySet() ) {
-      String mimeType = key.toString();
       String value = types.get(key).toString();
       System.out.println( "key: " + key + " " + "value: " + value);
     }
