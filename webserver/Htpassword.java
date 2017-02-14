@@ -5,6 +5,7 @@ import java.util.StringTokenizer;
 
 public class Htpassword extends ConfigurationReader {
   private HashMap<String, String> users;
+  private String delimiter = ":{SHA}";
 
 
   public Htpassword (String fileName ) throws FileNotFoundException {
@@ -26,19 +27,29 @@ public class Htpassword extends ConfigurationReader {
   }
 
   public void parse( String line ) {
+    String [] lineParts = line.split( ":" );
     StringTokenizer tokens = new StringTokenizer ( line, ":" );
     String username, password;
 
-    username = tokens.nextToken();
-    password = tokens.nextToken();
+    username = lineParts[0];
+    password = lineParts[1];
 
     users.put( username, password );
 
   }
 
   public boolean isAuthorized( String username, String password ) {
-    return ( users.containsValue( password ) && users.containsKey( username ) );
+    return ( users.get( username ).equals( password ) );
   }
+
+  public void getUserNames() {
+    System.out.println( users.keySet() );
+  }
+
+  public void getPasswords() {
+    System.out.println( users.values()) ;
+  }
+
 
   public void printHashMap() {
     for ( String key : users.keySet() ) {
