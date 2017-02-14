@@ -25,5 +25,11 @@ public class HtpasswordTest {
     System.out.println( ">>> Testing isAuthorized <<<" );
     System.out.println( htpassword.isAuthorized( "jrob" , 
       "{SHA}cRDtpNCeBiql5KOQsKVyrA0sAiA=" ) );
+
+    System.out.println( ">>> Printing all Users <<< " );
+    htpassword.getUserNames();
+
+    System.out.println( ">>> Printing all Passwords <<< ");
+    htpassword.getPasswords();
   }
 }
