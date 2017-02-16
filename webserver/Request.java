@@ -62,12 +62,17 @@ public class Request {
     httpVersion = tokens[2];
   }
   
-  private void parseHeader( String line ) {
-    StringTokenizer tokens = new StringTokenizer( line );
+  private void parseHeader( String line ) throws BadRequestException {
+    String[] tokens = line.split( ":", 2 );
     String header, value;
     
-    header = tokens.nextToken().replace( ":", "");
-    value = tokens.nextToken();
+    if( tokens.length < 2 ) {
+      throw new BadRequestException();
+    }
+    
+    header = tokens[0];
+    value = tokens[1];
+    value = value.trim();
     
     headers.put( header, value );
   }
