@@ -5,7 +5,7 @@ import java.io.IOException;
 import ServerExceptions.*;
 
 public class Worker extends Thread {
-  private Socket socket;
+  private Socket client;
   private MimeTypes mimes;
   private HttpdConf config;
   private Request request;
@@ -13,30 +13,26 @@ public class Worker extends Thread {
   //private ResponseFactory responseFactory;
   
   public Worker( Socket socket, HttpdConf config, MimeTypes mimes ) {
-    this.socket = socket;
+    this.client = socket;
     this.config = config;
     this.mimes = mimes;
   }
   
   public void run() {
-    /*
-    - Request
-    - Resource
-    - Access Check
-    - Response
-    */
+    System.out.println("WORKER:run()");
     try {
-      request = parseRequest( socket.getInputStream() );
-    } catch( IOException | BadRequestException e ) {
-      ;
+      parseRequest( client.getInputStream() );
+      
+      System.out.println(request.getVerb());
+      client.close();
+    } catch (IOException | ServerException ex ) {
+        
     }
     
   }
   
-  public Request parseRequest( InputStream inputStream ) throws BadRequestException, IOException {
+  public void parseRequest( InputStream inputStream ) throws BadRequestException, IOException {
     request = new Request( inputStream );
     request.parse();
-   
-    return request;
   }
 }
