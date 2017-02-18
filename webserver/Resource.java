@@ -25,12 +25,15 @@ public class Resource {
     resource.parseUri();
     
     if ( resource.isAlias() ) {
-      absolutePath = httpdConf.lookupAlias( firstSegment);
+      absolutePath = httpdConf.lookupAlias( firstSegment );
+
       if ( isDirectory() ) {
         if ( httpdConf.getDirectoryIndexes().equals(null) ) {
           return absolutePath;
         } else {
           absolutePath += httpdConf.getDirectoryIndexes().next();
+          return absolutePath;
+
         }
       }
     }
@@ -42,6 +45,7 @@ public class Resource {
           return absolutePath;
         } else {
           absolutePath += httpdConf.getDirectoryIndexes().next();
+          return absolutePath;
         }
       }
     }
