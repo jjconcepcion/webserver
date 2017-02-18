@@ -53,7 +53,7 @@ public class Resource {
         absolutePath += httpdConf.getDirectoryIndexes().next();
       }
     } else {
-      absolutePath = httpdConf.getDocumentRoot() + uri;
+      absolutePath = httpdConf.getDocumentRoot() + requestUri;
     }
     return absolutePath;
   }
