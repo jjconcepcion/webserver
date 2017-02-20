@@ -77,9 +77,17 @@ public class HttpdConf extends ConfigurationReader {
   public String lookupAlias( String urlPath ) {
     return aliases.get( urlPath );
   }
+
+  public boolean aliasesContainsKey( String key ) {
+    return aliases.containsKey( key );
+  }
   
   public String lookupScriptAlias( String urlPath ) {
     return scriptAliases.get( urlPath );
+  }
+
+    public boolean scriptedAliasesContainsKey( String key ) {
+    return scriptAliases.containsKey( key );
   }
 
   public String getServerRoot() {
