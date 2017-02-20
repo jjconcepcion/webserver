@@ -25,6 +25,7 @@ public class Resource {
     httpdConf = conf;
     mimeType = mime;
     index = httpdConf.getDirectoryIndexes();
+    absolutePath();
     createFile(absolutePath());
 
   }
@@ -53,13 +54,14 @@ public class Resource {
         absolutePath = resolvePath;
         createFile(absolutePath);
 
-        return absolutePath;
       }
+      return absolutePath;
     }
 
     if ( isScriptAlias() ) {
       modifiedUri = httpdConf.lookupScriptAlias( firstSegment ) + lastSegment;
       resolvePath = modifiedUri;
+
       if ( isFile (resolvePath ) ) {
         absolutePath = resolvePath;
       } else {
@@ -74,13 +76,14 @@ public class Resource {
         resolvePath = tempPath;
         absolutePath = resolvePath;
         createFile(absolutePath);
-
-        return absolutePath;
       }
+
+      return absolutePath;
     }
 
     resolvePath = httpdConf.getDocumentRoot().substring(0,
       httpdConf.getDocumentRoot().length() -1 ) + requestUri;
+    
     if ( isFile( resolvePath ) ) {
       absolutePath = resolvePath;
     } else {
@@ -109,11 +112,10 @@ public class Resource {
       File file = new File(requestUri);
       path = file.getPath();
       firstSegment = path.replaceAll(file.getName(),"");
-      lastSegment = path.substring( path.lastIndexOf( '/' ) + 1);
+      lastSegment = path.substring( path.lastIndexOf( '/' ) + 1 );
+
       if( firstSegment.equals( "/" ) && !lastSegment.equals("") ) {
         firstSegment += lastSegment + "/";
-        lastSegment = "";
-      } else {
         lastSegment = "";
       }
   }
@@ -133,7 +135,7 @@ public class Resource {
 
   public boolean isScriptAlias() {
     return ( httpdConf.scriptedAliasesContainsKey( firstSegment ) || 
-      httpdConf.scriptedAliasesContainsKey( firstSegment + lastSegment + "/" ) );
+      httpdConf.scriptedAliasesContainsKey( firstSegment + lastSegment + "/" ));
 
   }
 
