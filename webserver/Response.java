@@ -3,6 +3,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public abstract class Response {
   protected static final String HTTP_VERSION = "HTTP/1.1";
@@ -11,6 +14,9 @@ public abstract class Response {
   protected int code;
   protected String reasonPhrase;
   protected Resource resource;
+  protected byte[] body;
+  protected long byteSize;
+  protected String requestVerb;
   
   public Response( Resource resource ) {
     this.resource = resource;
@@ -43,6 +49,17 @@ public abstract class Response {
     
     out.write(headerLine);
     out.flush();
+  }
+  
+  protected void setBodyAttributes( File file ) throws IOException {
+    Path filePath = file.toPath();
+    
+    body = Files.readAllBytes( filePath );
+    byteSize = Files.size( filePath );
+  }
+  
+  public void setRequestMethod( String verb ) {
+    requestVerb = verb;
   }
   
 }
