@@ -67,6 +67,7 @@ public class Resource {
           tempPath = resolvePath + directoryIndex;
           fileCheck = new File( tempPath );
         }
+
         resolvePath = tempPath;
         absolutePath = resolvePath;
         createFile(absolutePath);
@@ -88,6 +89,7 @@ public class Resource {
         tempPath = resolvePath + directoryIndex;
         fileCheck = new File( tempPath );
       }
+      
       resolvePath = tempPath;
       absolutePath = resolvePath;
     }
@@ -112,7 +114,7 @@ public class Resource {
       }
   }
 
-  public void createFile(String path) {
+  public void createFile( String path ) {
     file = new File( path );
   } 
 
@@ -148,7 +150,7 @@ public class Resource {
     return check;
   }
 
-  public boolean isFile(String path) {
+  public boolean isFile( String path ) {
     File tempFile = new File(path);
     return tempFile.isFile();
   }
