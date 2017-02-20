@@ -10,7 +10,6 @@ public class Resource {
   private String path;
   private String lastSegment;
   private String firstSegment;
-  private String tempPath;
   private String directoryIndex;
   private String absolutePath;
   private String workingPath;
@@ -31,6 +30,7 @@ public class Resource {
   public String absolutePath() {
     String modifiedUri;
     String resolvePath;
+    String tempPath;
     parseUri();
 
     if( isAlias() ) {
@@ -51,7 +51,6 @@ public class Resource {
         resolvePath = tempPath;
         absolutePath = resolvePath;
         createFile(absolutePath);
-
       }
       return absolutePath;
     }
@@ -75,7 +74,6 @@ public class Resource {
         absolutePath = resolvePath;
         createFile(absolutePath);
       }
-
       return absolutePath;
     }
 
@@ -97,7 +95,6 @@ public class Resource {
       absolutePath = resolvePath;
     }
     createFile(absolutePath);
-
     return absolutePath;
   }
 
@@ -105,8 +102,7 @@ public class Resource {
     return absolutePath;
   }
 
-  public void parseUri() {
-      
+  public void parseUri() {   
       File file = new File(requestUri);
       path = file.getPath();
       firstSegment = path.replaceAll(file.getName(),"");
@@ -140,12 +136,11 @@ public class Resource {
   public boolean isProtected() {
     String directory;
     File tempPath = new File( absolutePath );
-    directory = tempPath.getParent();
-    boolean check = new File( directory, httpdConf.getAccessFileName() ).exists();
-    
+    boolean check = false;
+
     while ( check == false ) {
-      tempPath = new File (directory);
       directory = tempPath.getParent();
+      tempPath = new File (directory);
       check = new File( directory, httpdConf.getAccessFileName() ).exists();
       
       if (directory.equals( httpdConf.getDocumentRoot())) {
@@ -159,10 +154,6 @@ public class Resource {
     File file = new File(path);
     return file.isFile();
   }
-
-  // public boolean fileExists() {
-  //   return false;
-  // }
 
   public String getFirstSegment() {
     return firstSegment;
