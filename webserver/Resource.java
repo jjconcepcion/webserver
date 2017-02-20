@@ -163,4 +163,16 @@ public class Resource {
   public String getLastSegment() {
     return lastSegment;
   }
+  
+  public String getMimeType() {
+    String[] pathTokens;
+    String extension, mime;
+    
+    pathTokens = absolutePath.split("\\.");
+    extension = pathTokens[ pathTokens.length - 1 ];
+    
+    mime = mimeType.lookup( extension );
+    
+    return mime;
+  }
 }
