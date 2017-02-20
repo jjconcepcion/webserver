@@ -22,9 +22,10 @@ public class Resource {
     httpdConf = conf;
     mimeType = mime;
     index = httpdConf.getDirectoryIndexes();
-    createFile(absolutePath());
+    absolutePath();
+    // createFile(absolutePath());
     isScript = isScriptAlias();
-    isProtected = isProtected();
+    // isProtected = isProtected();
 
   }
 
@@ -43,18 +44,19 @@ public class Resource {
       if ( isFile( resolvePath ) ) {
         absolutePath = resolvePath;
       } else {
-        tempPath = resolvePath + directoryIndex;
-        fileCheck = new File( tempPath );
-
-        while ( fileCheck.exists() == false ) {
+        tempPath = resolvePath;
+        while ( index.hasNext() ) {
           directoryIndex = index.next();
           tempPath = resolvePath + directoryIndex;
           fileCheck = new File( tempPath );
+          if (fileCheck.exists()) {
+            break;
+          }
         }
         
         resolvePath = tempPath;
         absolutePath = resolvePath;
-        createFile(absolutePath);
+        // createFile(absolutePath);
       }
       return absolutePath;
     }
@@ -66,18 +68,19 @@ public class Resource {
       if ( isFile ( resolvePath ) ) {
         absolutePath = resolvePath;
       } else {
-        tempPath = resolvePath + directoryIndex;
-        fileCheck = new File( tempPath );
+        tempPath = resolvePath;
 
-        while ( fileCheck.exists() == false ) {
+        while ( index.hasNext() ) {
           directoryIndex = index.next();
           tempPath = resolvePath + directoryIndex;
           fileCheck = new File( tempPath );
+          if (fileCheck.exists()) {
+            break;
+          }
         }
-        
         resolvePath = tempPath;
         absolutePath = resolvePath;
-        createFile(absolutePath);
+        // createFile(absolutePath);
       }
       return absolutePath;
     }
@@ -88,20 +91,21 @@ public class Resource {
     if ( isFile( resolvePath ) ) {
       absolutePath = resolvePath;
     } else {
-      tempPath = resolvePath + directoryIndex;
-      fileCheck = new File( tempPath );
+      tempPath = resolvePath;
 
-      while ( fileCheck.exists() == false ) {
+      while ( index.hasNext() ) {
         directoryIndex = index.next();
         tempPath = resolvePath + directoryIndex;
         fileCheck = new File( tempPath );
+        if (fileCheck.exists()) {
+          break;
+        }
       }
       
       resolvePath = tempPath;
       absolutePath = resolvePath;
-    }
-    
-    createFile(absolutePath);
+    }    
+    // createFile(absolutePath);
     return absolutePath;
   }
 
@@ -145,13 +149,12 @@ public class Resource {
   }
 
   public boolean isProtected() {
-    String directory = null;
+    String directory = absolutePath;
     File tempPath = new File( absolutePath );
-    // System.out.println( "PROTECTED? " + isProtected );
     while ( isProtected == false ) {
-      directory = tempPath.getParent();
       tempPath = new File( directory );
       isProtected = new File( directory, httpdConf.getAccessFileName() ).exists();
+      directory = tempPath.getParent();
       
       if (directory.equals( httpdConf.getDocumentRoot())) {
         break;
