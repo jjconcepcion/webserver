@@ -45,6 +45,7 @@ public class Resource {
           tempPath = resolvePath + directoryIndex;
           fileCheck = new File( tempPath );
         }
+        
         resolvePath = tempPath;
         absolutePath = resolvePath;
         createFile(absolutePath);
@@ -56,7 +57,7 @@ public class Resource {
       modifiedUri = httpdConf.lookupScriptAlias( firstSegment ) + lastSegment;
       resolvePath = modifiedUri;
 
-      if ( isFile (resolvePath ) ) {
+      if ( isFile ( resolvePath ) ) {
         absolutePath = resolvePath;
       } else {
         tempPath = resolvePath + directoryIndex;
@@ -67,7 +68,7 @@ public class Resource {
           tempPath = resolvePath + directoryIndex;
           fileCheck = new File( tempPath );
         }
-
+        
         resolvePath = tempPath;
         absolutePath = resolvePath;
         createFile(absolutePath);
@@ -93,6 +94,7 @@ public class Resource {
       resolvePath = tempPath;
       absolutePath = resolvePath;
     }
+    
     createFile(absolutePath);
     return absolutePath;
   }
@@ -103,7 +105,7 @@ public class Resource {
 
   public void parseUri() { 
       String path;  
-      File file = new File(requestUri);
+      File file = new File( requestUri );
       path = file.getPath();
       firstSegment = path.replaceAll(file.getName(),"");
       lastSegment = path.substring( path.lastIndexOf( '/' ) + 1 );
@@ -130,7 +132,6 @@ public class Resource {
   public boolean isScriptAlias() {
     return ( httpdConf.scriptedAliasesContainsKey( firstSegment ) || 
       httpdConf.scriptedAliasesContainsKey( firstSegment + lastSegment + "/" ));
-
   }
 
   public boolean isProtected() {
@@ -140,7 +141,7 @@ public class Resource {
 
     while ( check == false ) {
       directory = tempPath.getParent();
-      tempPath = new File (directory);
+      tempPath = new File( directory );
       check = new File( directory, httpdConf.getAccessFileName() ).exists();
       
       if (directory.equals( httpdConf.getDocumentRoot())) {
@@ -151,7 +152,7 @@ public class Resource {
   }
 
   public boolean isFile( String path ) {
-    File tempFile = new File(path);
+    File tempFile = new File( path );
     return tempFile.isFile();
   }
 
