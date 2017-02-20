@@ -24,9 +24,8 @@ public class Resource {
     requestUri = uri;
     httpdConf = conf;
     mimeType = mime;
-    file = new File(requestUri);
-    path = new String(file.getPath());
     index = httpdConf.getDirectoryIndexes();
+    createFile(absolutePath());
 
   }
 
@@ -52,6 +51,7 @@ public class Resource {
         }
         resolvePath = tempPath;
         absolutePath = resolvePath;
+        createFile(absolutePath);
 
         return absolutePath;
       }
@@ -73,12 +73,14 @@ public class Resource {
         }
         resolvePath = tempPath;
         absolutePath = resolvePath;
+        createFile(absolutePath);
 
         return absolutePath;
       }
     }
 
-    resolvePath = httpdConf.getDocumentRoot().substring(0, httpdConf.getDocumentRoot().length() -1 ) + requestUri;
+    resolvePath = httpdConf.getDocumentRoot().substring(0,
+      httpdConf.getDocumentRoot().length() -1 ) + requestUri;
     if ( isFile( resolvePath ) ) {
       absolutePath = resolvePath;
     } else {
@@ -93,103 +95,35 @@ public class Resource {
       resolvePath = tempPath;
       absolutePath = resolvePath;
     }
+    createFile(absolutePath);
 
     return absolutePath;
+  }
 
-    // if( resource.isFile() ) {
-    //   return absolutePath;
-    // }
-
-    // absolutePath = httpdConf.getDocumentRoot() + firstSegment + lastSegment;
-    // System.out.println( "initial absolute path: " + absolutePath );
-    
-    // if ( resource.isAlias() ) {
-    //   absolutePath = httpdConf.lookupAlias( firstSegment ) + lastSegment;
-    //   // System.out.println("is directory? " + isDirectory());
-    //   System.out.println( "absolute path: " + absolutePath );
-    //   if ( isDirectory() ) {
-    //     if ( httpdConf.getDirectoryIndexes().equals(null) ) {
-    //       return absolutePath;
-    //     } else {
-    //       tempPath = absolutePath + directoryIndex;  
-    //       // System.out.println(tempPath);        
-    //       fileCheck = new File(tempPath);
-
-    //       while ( fileCheck.exists() == false) {
-    //         directoryIndex = index.next(); 
-    //         tempPath = absolutePath + directoryIndex;
-    //         fileCheck = new File( tempPath );
-    //       }
-
-    //       // absolutePath += httpdConf.getDirectoryIndexes().next();
-    //       // fileCheck = new File(absolutePath);
-    //       // System.out.println( "File exists: " + fileCheck.exists() );
-    //       return absolutePath += directoryIndex;
-
-    //     }
-    //   }
-    // }
-    
-    // if ( resource.isScriptAlias() ) {
-    //   absolutePath = httpdConf.lookupScriptAlias( firstSegment ) + lastSegment;
-    //   System.out.println( "absolute path: " + absolutePath );
-
-    //   if ( isDirectory() ) {
-    //     if ( httpdConf.getDirectoryIndexes().equals(null) ) {
-    //       return absolutePath;
-    //     } else {
-          
-    //       tempPath = absolutePath + directoryIndex;          
-    //       fileCheck = new File(tempPath);
-    //       // System.out.println("File exists? " + fileExists());
-    //       while ( fileCheck.exists() == false) {
-    //         directoryIndex = index.next(); 
-    //         tempPath = absolutePath + directoryIndex;
-    //         fileCheck = new File( tempPath );
-    //       }
-    //       return absolutePath += directoryIndex;
-    //     }
-    //   }
-    // }
-
-    // absolutePath = httpdConf.getDocumentRoot() + firstSegment + lastSegment;
-
-    // if ( resource.isDirectory() ) {
-    //   // absolutePath = httpdConf.lookupScriptAlias( firstSegment );
-
-    //   if ( httpdConf.getDirectoryIndexes().equals(null) ) {
-    //     return absolutePath;
-    //   } else {
-    //     absolutePath += index.next();
-    //   }
-    // } else {
-    //   absolutePath = httpdConf.getDocumentRoot() + requestUri;
-    // }
-    // return absolutePath;
+  public String getAbsolutePath() {
+    return absolutePath;
   }
 
   public void parseUri() {
-    // try {
-      // URI uri = new URI(requestUri); 
-      // path = uri.getPath();
-      // lastSegment = path.substring( path.lastIndexOf( '/' ) + 1 );
       
-      // File file = new File(requestUri);
-
-      // path = file.getPath();
-      // System.out.println( "parseUri path: " + path );
+      File file = new File(requestUri);
+      path = file.getPath();
       firstSegment = path.replaceAll(file.getName(),"");
       lastSegment = path.substring( path.lastIndexOf( '/' ) + 1);
-      // System.out.println( "the first segment: " + firstSegment );
-      // System.out.println( "the last segment: " + lastSegment );
       if( firstSegment.equals( "/" ) && !lastSegment.equals("") ) {
         firstSegment += lastSegment + "/";
         lastSegment = "";
       } else {
         lastSegment = "";
       }
+  }
 
-    // } catch (URISyntaxException e) {} 
+  public void createFile(String path) {
+    file = new File( path );
+  } 
+
+  public File getFile() {
+    return file;
   }
 
   public boolean isAlias() {
@@ -208,22 +142,13 @@ public class Resource {
   }
 
   public boolean isFile(String path) {
-    File files = new File(path);
-    return files.isFile();
-  }
-
-  public boolean isDirectory(String path) {
-    File files = new File(path);
-    return files.isDirectory();
+    File file = new File(path);
+    return file.isFile();
   }
 
   public boolean fileExists() {
     return false;
   }
-
-  // public String getPath() {
-  //   return path;
-  // }
 
   public String getFirstSegment() {
     return firstSegment;
