@@ -25,7 +25,6 @@ public class Resource {
     httpdConf = conf;
     mimeType = mime;
     index = httpdConf.getDirectoryIndexes();
-    absolutePath();
     createFile(absolutePath());
 
   }
