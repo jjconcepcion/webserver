@@ -13,6 +13,9 @@ public class Resource {
   private File file;
   private MimeTypes mimeType;
   private ListIterator<String> index;
+  private boolean isScript;
+  private boolean isAlias;
+  private boolean isProtected;
 
   public Resource( String uri, HttpdConf conf, MimeTypes mime ) {
     requestUri = uri;
@@ -20,6 +23,9 @@ public class Resource {
     mimeType = mime;
     index = httpdConf.getDirectoryIndexes();
     createFile(absolutePath());
+    isScript = isScriptAlias();
+    isProtected = isProtected();
+
   }
 
   public String absolutePath() {
@@ -130,25 +136,28 @@ public class Resource {
   }
 
   public boolean isScriptAlias() {
-    return ( httpdConf.scriptedAliasesContainsKey( firstSegment ) || 
+    return (httpdConf.scriptedAliasesContainsKey( firstSegment ) || 
       httpdConf.scriptedAliasesContainsKey( firstSegment + lastSegment + "/" ));
+  }
+
+  public boolean isScript() {
+    return isScript;
   }
 
   public boolean isProtected() {
     String directory = null;
     File tempPath = new File( absolutePath );
-    boolean check = false;
-
-    while ( check == false ) {
+    // System.out.println( "PROTECTED? " + isProtected );
+    while ( isProtected == false ) {
       directory = tempPath.getParent();
       tempPath = new File( directory );
-      check = new File( directory, httpdConf.getAccessFileName() ).exists();
+      isProtected = new File( directory, httpdConf.getAccessFileName() ).exists();
       
       if (directory.equals( httpdConf.getDocumentRoot())) {
         break;
       }
     }
-    return check;
+    return isProtected;
   }
 
   public boolean isFile( String path ) {
