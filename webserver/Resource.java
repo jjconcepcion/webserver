@@ -139,9 +139,19 @@ public class Resource {
 
   public boolean isProtected() {
     String directory;
-    File tempFile = new File( absolutePath );
-    directory = tempFile.getParent();
+    File tempPath = new File( absolutePath );
+    directory = tempPath.getParent();
     boolean check = new File( directory, httpdConf.getAccessFileName() ).exists();
+    
+    while ( check == false ) {
+      tempPath = new File (directory);
+      directory = tempPath.getParent();
+      check = new File( directory, httpdConf.getAccessFileName() ).exists();
+      
+      if (directory.equals( httpdConf.getDocumentRoot())) {
+        break;
+      }
+    } 
     return check;
   }
 
