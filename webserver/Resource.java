@@ -26,7 +26,6 @@ public class Resource {
     mimeType = mime;
     index = httpdConf.getDirectoryIndexes();
     createFile(absolutePath());
-
   }
 
   public String absolutePath() {
@@ -139,7 +138,11 @@ public class Resource {
   }
 
   public boolean isProtected() {
-    return false;
+    String directory;
+    File tempFile = new File( absolutePath );
+    directory = tempFile.getParent();
+    boolean check = new File( directory, httpdConf.getAccessFileName() ).exists();
+    return check;
   }
 
   public boolean isFile(String path) {
@@ -147,9 +150,9 @@ public class Resource {
     return file.isFile();
   }
 
-  public boolean fileExists() {
-    return false;
-  }
+  // public boolean fileExists() {
+  //   return false;
+  // }
 
   public String getFirstSegment() {
     return firstSegment;
