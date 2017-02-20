@@ -37,7 +37,7 @@ public class ResourceTest {
       Resource resource6 = new Resource( uri6, conf, mimetype );
 
 
-      // Test case for Alias
+      // Test case for Alias /ab/index.html
       System.out.println( "uri1: " + uri1 );
       System.out.println( "First Segment: " + resource1.getFirstSegment() );
       System.out.println( "Last Segment: " + resource1.getLastSegment() );
@@ -48,7 +48,7 @@ public class ResourceTest {
 
       System.out.println();
 
-      // Test case for Alias with no file
+      // Test case for Alias with no file /ab/
       System.out.println( "uri2: " + uri2 );
       System.out.println( "First Segment: " + resource2.getFirstSegment() );
       System.out.println( "Last Segment: " + resource2.getLastSegment() );
@@ -59,7 +59,7 @@ public class ResourceTest {
 
       System.out.println();
 
-      // Test case for Script Alias
+      // Test case for Script Alias /cgi-bin/perl_env
       System.out.println( "uri3: " + uri3 );
       System.out.println( "First Segment: " + resource3.getFirstSegment() );
       System.out.println( "Last Segment: " + resource3.getLastSegment() );
@@ -70,7 +70,7 @@ public class ResourceTest {
 
       System.out.println();
 
-      // Test case for Script Alias with no file
+      // Test case for Script Alias with no file /cgi-bin/
       System.out.println( "uri4: " + uri4 );
       System.out.println( "First Segment: " + resource4.getFirstSegment() );
       System.out.println( "Last Segment: " + resource4.getLastSegment() );
@@ -81,7 +81,7 @@ public class ResourceTest {
 
       System.out.println();
 
-      // Test case for Alias 
+      // Test case for Alias /~traciely/
       System.out.println( "uri5: " + uri5 );
       System.out.println( "First Segment: " + resource5.getFirstSegment() );
       System.out.println( "Last Segment: " + resource5.getLastSegment() );
