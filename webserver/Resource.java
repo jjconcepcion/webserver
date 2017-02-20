@@ -1,23 +1,18 @@
 import java.io.*;
 import java.util.StringTokenizer;
 import java.util.HashMap;
-import java.net.*;
 import java.util.ListIterator;
 
 public class Resource {
   private HttpdConf httpdConf;
   private String requestUri;
-  private String path;
   private String lastSegment;
   private String firstSegment;
   private String directoryIndex;
   private String absolutePath;
-  private String workingPath;
   private File file;
-  private File fileCheck;
   private MimeTypes mimeType;
   private ListIterator<String> index;
-  private Htaccess htaccess;
 
   public Resource( String uri, HttpdConf conf, MimeTypes mime ) {
     requestUri = uri;
@@ -31,8 +26,10 @@ public class Resource {
     String modifiedUri;
     String resolvePath;
     String tempPath;
-    parseUri();
+    File fileCheck;
 
+    parseUri();
+    
     if( isAlias() ) {
       modifiedUri = httpdConf.lookupAlias( firstSegment ) + lastSegment;
       resolvePath = modifiedUri;
@@ -102,7 +99,8 @@ public class Resource {
     return absolutePath;
   }
 
-  public void parseUri() {   
+  public void parseUri() { 
+      String path;  
       File file = new File(requestUri);
       path = file.getPath();
       firstSegment = path.replaceAll(file.getName(),"");
@@ -134,7 +132,7 @@ public class Resource {
   }
 
   public boolean isProtected() {
-    String directory;
+    String directory = null;
     File tempPath = new File( absolutePath );
     boolean check = false;
 
@@ -146,13 +144,13 @@ public class Resource {
       if (directory.equals( httpdConf.getDocumentRoot())) {
         break;
       }
-    } 
+    }
     return check;
   }
 
   public boolean isFile(String path) {
-    File file = new File(path);
-    return file.isFile();
+    File tempFile = new File(path);
+    return tempFile.isFile();
   }
 
   public String getFirstSegment() {
