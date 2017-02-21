@@ -1,5 +1,3 @@
-package server.configuration;
-
 import java.util.HashMap;
 import java.util.Base64;
 import java.nio.charset.Charset;
@@ -17,7 +15,19 @@ public class Htpassword extends ConfigurationReader {
     this.passwords = new HashMap<String, String>();
     this.load();
   }
-
+  
+  public void load() throws IOException {
+    String line = null;
+    
+    while( hasMoreLines() ) {
+      line = nextLine();
+      if( line.startsWith( "#" ) || line.isEmpty() ) {
+        continue;
+      }
+      parseLine( line );
+    }
+  }
+  
   protected void parseLine( String line ) {
     String[] tokens = line.split( ":" );
 
@@ -37,13 +47,15 @@ public class Htpassword extends ConfigurationReader {
     // The string is the key:value pair username:password
     String[] tokens = credentials.split( ":" );
 
-    // TODO: implement this
+    return verifyPassword( tokens[0], tokens[1] );
   }
 
   private boolean verifyPassword( String username, String password ) {
     // encrypt the password, and compare it to the password stored
     // in the password file (keyed by username)
-    // TODO: implement this
+    String storedPassword = passwords.get( username );
+    
+    return encryptClearPassword( password ).equals( storedPassword );
   }
 
   private String encryptClearPassword( String password ) {
@@ -56,6 +68,17 @@ public class Htpassword extends ConfigurationReader {
      return Base64.getEncoder().encodeToString( result );
     } catch( Exception e ) {
       return "";
+    }
+  }
+  
+  public static void main(String[] args) {
+    String passwordFile = "/home/foxtrot/CSC667/server/public_html/.htpasswd";
+    try {
+      Htpassword htpasswd = new Htpassword( passwordFile );
+      
+      System.out.println( htpasswd.isAuthorized("anJvYjpwYXNzd29yZA==") );
+    } catch( IOException exception ) {
+
     }
   }
 }
