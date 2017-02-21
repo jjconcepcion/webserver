@@ -1,4 +1,6 @@
 import ServerExceptions.*;
+import java.io.IOException;
+import java.io.File;
 
 public class ResponseFactory {
   public static Response getResponse( Request request, Resource resource, 
@@ -28,4 +30,27 @@ public class ResponseFactory {
     
     return response;
   }
+  
+  public static Response getResponse( Request request, Resource resource ) 
+      throws IOException {
+    Response response = null;
+    String requestMethod = request.getVerb();
+    File file;
+    
+    requestMethod = request.getVerb();
+    file = resource.getFile();
+    //file = new File( resource.getAbsolutePath() );
+    
+    System.out.println("FACTORY");
+    System.out.println(file);
+    
+    if(requestMethod.equals("GET")) {
+      response = new OKResponse( resource );
+      response.setRequestMethod(requestMethod );
+      response.setBodyDataFrom( file );
+    }
+    
+    return response;
+  }
+  
 }

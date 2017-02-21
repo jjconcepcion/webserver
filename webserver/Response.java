@@ -15,7 +15,6 @@ public abstract class Response {
   protected String reasonPhrase;
   protected Resource resource;
   protected byte[] body;
-  protected long byteSize;
   protected String requestVerb;
   
   public Response( Resource resource ) {
@@ -31,7 +30,7 @@ public abstract class Response {
     FormattedDate date = new FormattedDate( LocalDateTime.now() );
     
     sendStatusLine( out );
-    sendHeaderLine( out, "Server", "TeamCN");
+    sendHeaderLine( out, "Server", SERVER_NAME );
     sendHeaderLine( out, "Date", date.toString() ); 
   }
   
@@ -51,11 +50,10 @@ public abstract class Response {
     out.flush();
   }
   
-  protected void setBodyAttributes( File file ) throws IOException {
+  protected void setBodyDataFrom( File file ) throws IOException {
     Path filePath = file.toPath();
     
     body = Files.readAllBytes( filePath );
-    byteSize = Files.size( filePath );
   }
   
   public void setRequestMethod( String verb ) {
