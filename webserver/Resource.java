@@ -43,10 +43,12 @@ public class Resource {
         absolutePath = resolvePath;
       } else {
         tempPath = resolvePath;
+
         while ( index.hasNext() ) {
           directoryIndex = index.next();
           tempPath = resolvePath + directoryIndex;
           fileCheck = new File( tempPath );
+
           if (fileCheck.exists()) {
             break;
           }
@@ -54,7 +56,6 @@ public class Resource {
         
         resolvePath = tempPath;
         absolutePath = resolvePath;
-        // createFile(absolutePath);
       }
       return absolutePath;
     }
@@ -78,7 +79,6 @@ public class Resource {
         }
         resolvePath = tempPath;
         absolutePath = resolvePath;
-        // createFile(absolutePath);
       }
       return absolutePath;
     }
@@ -102,8 +102,7 @@ public class Resource {
       
       resolvePath = tempPath;
       absolutePath = resolvePath;
-    }    
-    // createFile(absolutePath);
+    }
     return absolutePath;
   }
 
@@ -149,11 +148,12 @@ public class Resource {
   public boolean isProtected() {
     String directory = absolutePath;
     File tempPath = new File( absolutePath );
+
     while ( isProtected == false ) {
       tempPath = new File( directory );
       isProtected = new File( directory, conf.getAccessFileName() ).exists();
       directory = tempPath.getParent();
-      
+
       if (directory.equals( conf.getDocumentRoot())) {
         break;
       }
@@ -168,13 +168,5 @@ public class Resource {
 
   public MimeTypes getMimeType() {
     return mime;
-  }
-
-  public String getFirstSegment() {
-    return firstSegment;
-  }
-
-  public String getLastSegment() {
-    return lastSegment;
   }
 }
