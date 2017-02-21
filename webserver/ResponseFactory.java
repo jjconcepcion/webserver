@@ -47,7 +47,7 @@ public class ResponseFactory {
     if(requestMethod.equals("GET")) {
       response = new OKResponse( resource );
       response.setRequestMethod(requestMethod );
-      response.setBodyDataFrom( file );
+      //response.setBodyDataFrom( file );
     }
     
     return response;
