@@ -9,9 +9,11 @@ public class ResponseFactory {
     Response response = null;
     
     if( exception instanceof BadRequestException ) {
+      response = new BadRequestResponse( resource );
     } else if( exception instanceof UnauthorizedException) {
     } else if( exception instanceof ForbiddenException ) {
     } else if( exception instanceof NotFoundException ) {
+      response = new NotFoundException( resource );
     } else if( exception instanceof InternalServerErrorException ) {
     } 
     
