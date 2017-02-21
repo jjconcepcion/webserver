@@ -22,10 +22,9 @@ public class Resource {
     httpdConf = conf;
     mimeType = mime;
     index = httpdConf.getDirectoryIndexes();
-    absolutePath();
-    // createFile(absolutePath());
+    createFile( absolutePath() );
     isScript = isScriptAlias();
-    // isProtected = isProtected();
+    isProtected = isProtected();
 
   }
 
