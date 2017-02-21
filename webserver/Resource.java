@@ -35,58 +35,20 @@ public class Resource {
 
     parseUri();
     
+    resolvePath = conf.getDocumentRoot().substring(0,
+      conf.getDocumentRoot().length() -1 ) + uri;
+
     if( isAlias() ) {
       modifiedUri = conf.lookupAlias( firstSegment ) + lastSegment;
       resolvePath = modifiedUri;
-
-      if ( isFile( resolvePath ) ) {
-        absolutePath = resolvePath;
-      } else {
-        tempPath = resolvePath;
-
-        while ( index.hasNext() ) {
-          directoryIndex = index.next();
-          tempPath = resolvePath + directoryIndex;
-          fileCheck = new File( tempPath );
-
-          if (fileCheck.exists()) {
-            break;
-          }
-        }
-        
-        resolvePath = tempPath;
-        absolutePath = resolvePath;
-      }
-      return absolutePath;
     }
 
-    if ( isScriptAlias() ) {
+    if( isScriptAlias() ) {
       modifiedUri = conf.lookupScriptAlias( firstSegment ) + lastSegment;
       resolvePath = modifiedUri;
-
-      if ( isFile ( resolvePath ) ) {
-        absolutePath = resolvePath;
-      } else {
-        tempPath = resolvePath;
-
-        while ( index.hasNext() ) {
-          directoryIndex = index.next();
-          tempPath = resolvePath + directoryIndex;
-          fileCheck = new File( tempPath );
-          if (fileCheck.exists()) {
-            break;
-          }
-        }
-        resolvePath = tempPath;
-        absolutePath = resolvePath;
-      }
-      return absolutePath;
     }
-
-    resolvePath = conf.getDocumentRoot().substring(0,
-      conf.getDocumentRoot().length() -1 ) + uri;
     
-    if ( isFile( resolvePath ) ) {
+    if( isFile( resolvePath ) ) {
       absolutePath = resolvePath;
     } else {
       tempPath = resolvePath;
