@@ -45,7 +45,6 @@ public class Resource {
       directoryPath = iterator.next().toString();
 
       if( isAlias() ) {
-        isAlias = true;
         while( iterator.hasNext() ) {
           endOfPath = iterator.next().toString();
         }
@@ -61,8 +60,6 @@ public class Resource {
       }
 
       if( isScriptAlias() ) {
-        isScript = true;
-
         while( iterator.hasNext() ) {
           endOfPath = iterator.next().toString();
         }
