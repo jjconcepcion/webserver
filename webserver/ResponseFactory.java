@@ -39,11 +39,19 @@ public class ResponseFactory {
     );
     
     if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ) {
-      response = new OKResponse( resource );
-      response.setRequestMethod(requestMethod );
-      response.setHeaderLine( "Last-Modified", modifiedDate.toString() );
+    
+      if( request.isConditional() &&
+          request.modifiedDate().equals( modifiedDate.toString() )) {
+        response = new NotModifiedResponse( resource );
+      } else {
+        response = new OKResponse( resource );
+        response.setRequestMethod(requestMethod );
+      }
       
+      response.setHeaderLine( "Last-Modified", modifiedDate.toString() );
+      response.setHeaderLine( "Cache-Control: ", "max-age=3600" );
     } else if( requestMethod.equals( "PUT" ) ) {
+      
       File putFile = new File( filePath.toString() );
       FileOutputStream fileOut = new FileOutputStream( putFile, false );
   
