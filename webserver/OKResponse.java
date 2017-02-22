@@ -15,7 +15,7 @@ public class OKResponse extends Response {
       new OutputStreamWriter( outputStream )
     );
     
-    this.setBodyDataFrom( this.resource.getFile() );
+    this.setBodyDataFrom( this.resource.absolutePath() );
     
     this.sendCommonPreamble( out );
     this.sendHeaderLine( out, "Content-Type", this.resource.getMimeType() );
