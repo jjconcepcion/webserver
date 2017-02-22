@@ -33,7 +33,7 @@ public class Resource {
     return absolutePath;
   }
 
-  public void resolveAbsolutePath() { 
+  private void resolveAbsolutePath() { 
     Path path = Paths.get( uri );
     Iterator<Path> iterator = path.iterator();
     String tempPath;
@@ -48,7 +48,6 @@ public class Resource {
         isAlias = true;
         while( iterator.hasNext() ) {
           endOfPath = iterator.next().toString();
-
         }
 
         if( aliasContainsDocumentRoot() ) {
@@ -99,41 +98,12 @@ public class Resource {
     absolutePath = modifiedUri + endOfPath;
   }
 
-  public void createFile( String path ) {
+  private void createFile( String path ) {
     file = new File( path );
   } 
 
   public File getFile() {
     return file;
-  }
-
-  public boolean isAlias() {
-    isAlias = conf.aliasesContainsKey( "/" + directoryPath + "/" );
-    return isAlias;
-  }
-
-  public boolean isScriptAlias() {
-    isScript = conf.scriptedAliasesContainsKey( "/" + directoryPath + "/" );
-    return isScript;
-  }
-
-  public boolean isScript() {
-    return isScript;
-  }
-
-  public boolean isProtected() {
-    String directory = absolutePath;
-    File tempPath = new File( absolutePath );
-
-    while ( isProtected == false ) {
-      tempPath = new File( directory );
-      isProtected = new File( directory, conf.getAccessFileName() ).exists();
-      directory = tempPath.getParent() + "/";
-      if (directory.equals( conf.getDocumentRoot() ) ) {
-        break;
-      }
-    }
-    return isProtected;
   }
 
   private boolean aliasContainsDocumentRoot() {
@@ -153,5 +123,34 @@ public class Resource {
 
   public MimeTypes getMimeType() {
     return mime;
+  }
+
+  public boolean isAlias() {
+    isAlias = conf.aliasesContainsKey( "/" + directoryPath + "/" );
+    return isAlias;
+  }
+
+  public boolean isScriptAlias() {
+    isScript = conf.scriptedAliasesContainsKey( "/" + directoryPath + "/" );
+    return isScript;
+  }
+
+  public boolean isScript() {
+    return isScript;
+  }
+
+  public boolean isProtected() {
+    String directory = absolutePath;
+    File tempPath = new File( directory );
+
+    while ( isProtected == false ) {
+      tempPath = new File( directory );
+      isProtected = new File( directory, conf.getAccessFileName() ).exists();
+      directory = tempPath.getParent() + "/";
+      if (directory.equals( conf.getDocumentRoot() ) ) {
+        break;
+      }
+    }
+    return isProtected;
   }
 }
