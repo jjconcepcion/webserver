@@ -17,10 +17,6 @@ public class NotModifiedResponse extends Response {
     
     this.sendCommonPreamble( out );
     this.sendSetHeaders( out );
-    this.sendHeaderLine( out, "Content-Type", this.resource.getMimeType() );
-    this.sendHeaderLine(
-      out, "Content-Length", String.valueOf( this.body.length ) 
-    );
    
     out.write(this.CRLF);
     out.flush();
