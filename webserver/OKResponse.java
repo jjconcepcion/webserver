@@ -10,40 +10,31 @@ public class OKResponse extends Response {
     this.reasonPhrase = "OK";
   }
   
-  public OKResponse() {
-    this.code = 200;
-    this.reasonPhrase = "OK";
-  }
-  
   public void send( OutputStream outputStream ) throws IOException {
     BufferedWriter out = new BufferedWriter( 
       new OutputStreamWriter( outputStream )
     );
     
-    // get get from resource
-    String type = "text/html";
-    int byteSize = 1024;
+    this.setBodyDataFrom( this.resource.getFile() );
     
     this.sendCommonPreamble( out );
-    this.sendHeaderLine( out, "Content-Type", type );
-    this.sendHeaderLine( out, "Content-Length", String.valueOf(byteSize) );
+    this.sendHeaderLine( out, "Content-Type", this.resource.getMimeType() );
+    this.sendHeaderLine(
+      out, "Content-Length", String.valueOf( this.body.length ) 
+    );
    
-    //this.sendHeaderLine( out, "Connection", "close" );
     out.write(this.CRLF);
     out.flush();
     
-    //if HEAD work is done
-    //if GET send body
-    //if POST ?
-  }
-  
-  public static void main(String[] args ) {
-    Response response = new OKResponse();
-    
-    try {
-      response.send(System.out);
-    } catch (IOException ex) {
+    if( this.requestVerb.equals("GET") ) {
+      
+      outputStream.write( body );
+      outputStream.flush();
     }
+  
+    //if HEAD work is done
+    
+    //if POST ?
   }
   
 }
