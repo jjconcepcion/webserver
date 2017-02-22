@@ -16,7 +16,7 @@ public abstract class Response {
   protected Resource resource;
   protected byte[] body;
   protected String requestVerb;
-  protected String setHeaders;
+  protected String setHeaders = "";
   
   public Response( Resource resource ) {
     this.resource = resource;
