@@ -2,121 +2,101 @@ import java.io.*;
 import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.ListIterator;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
 
 public class Resource {
-  private HttpdConf httpdConf;
-  private String requestUri;
-  private String lastSegment;
-  private String firstSegment;
+  private HttpdConf conf;
+  private String uri;
+  private String directoryPath;
   private String directoryIndex;
   private String absolutePath;
   private File file;
-  private MimeTypes mimeType;
+  private MimeTypes mime;
   private ListIterator<String> index;
+  private boolean isScript;
+  private boolean isAlias;
+  private boolean isProtected;
 
   public Resource( String uri, HttpdConf conf, MimeTypes mime ) {
-    requestUri = uri;
-    httpdConf = conf;
-    mimeType = mime;
-    index = httpdConf.getDirectoryIndexes();
-    createFile(absolutePath());
+    this.uri = uri;
+    this.conf = conf;
+    this.mime = mime;
+    isAlias = false;
+    isScript = false;
+    isProtected = false;
+    index = conf.getDirectoryIndexes();
+    resolveAbsolutePath();
   }
 
   public String absolutePath() {
-    String modifiedUri;
-    String resolvePath;
+    return absolutePath;
+  }
+
+  private void resolveAbsolutePath() { 
+    Path path = Paths.get( uri );
+    Iterator<Path> iterator = path.iterator();
     String tempPath;
-    File fileCheck;
+    String endOfPath = "";
+    String modifiedUri = conf.getDocumentRoot().substring(0,
+      conf.getDocumentRoot().length() -1 ) + uri;
 
-    parseUri();
-    
-    if( isAlias() ) {
-      modifiedUri = httpdConf.lookupAlias( firstSegment ) + lastSegment;
-      resolvePath = modifiedUri;
+    while( iterator.hasNext() ) {
+      directoryPath = iterator.next().toString();
 
-      if ( isFile( resolvePath ) ) {
-        absolutePath = resolvePath;
-      } else {
-        tempPath = resolvePath + directoryIndex;
-        fileCheck = new File( tempPath );
-
-        while ( fileCheck.exists() == false ) {
-          directoryIndex = index.next();
-          tempPath = resolvePath + directoryIndex;
-          fileCheck = new File( tempPath );
+      if( isAlias() ) {
+        while( iterator.hasNext() ) {
+          endOfPath = iterator.next().toString();
         }
-        
-        resolvePath = tempPath;
-        absolutePath = resolvePath;
-        createFile(absolutePath);
+
+        if( aliasContainsDocumentRoot() ) {
+          modifiedUri = conf.lookupAlias( "/" + directoryPath + "/" );
+        } else {
+        modifiedUri = conf.getDocumentRoot().substring(0, 
+          conf.getDocumentRoot().length() -1 ) + 
+            conf.lookupAlias( "/" + directoryPath + "/" );
+        }
+        break;
       }
-      return absolutePath;
+
+      if( isScriptAlias() ) {
+        while( iterator.hasNext() ) {
+          endOfPath = iterator.next().toString();
+        }
+
+        if( scriptAliasContainsDocumentRoot() ) {
+          modifiedUri = conf.lookupScriptAlias( "/" + directoryPath + "/" );
+        } else {
+        modifiedUri = conf.getDocumentRoot().substring(0, 
+          conf.getDocumentRoot().length() -1 ) + 
+            conf.lookupScriptAlias( "/" + directoryPath + "/" );
+        }
+        break;
+      }
     }
 
-    if ( isScriptAlias() ) {
-      modifiedUri = httpdConf.lookupScriptAlias( firstSegment ) + lastSegment;
-      resolvePath = modifiedUri;
+    if( isFile( modifiedUri ) ) {
+      absolutePath = modifiedUri;
+    } else if( endOfPath == "" ) {
+      tempPath = modifiedUri;
+      File fileCheck;
 
-      if ( isFile ( resolvePath ) ) {
-        absolutePath = resolvePath;
-      } else {
-        tempPath = resolvePath + directoryIndex;
-        fileCheck = new File( tempPath );
-
-        while ( fileCheck.exists() == false ) {
-          directoryIndex = index.next();
-          tempPath = resolvePath + directoryIndex;
-          fileCheck = new File( tempPath );
-        }
-        
-        resolvePath = tempPath;
-        absolutePath = resolvePath;
-        createFile(absolutePath);
-      }
-      return absolutePath;
-    }
-
-    resolvePath = httpdConf.getDocumentRoot().substring(0,
-      httpdConf.getDocumentRoot().length() -1 ) + requestUri;
-    
-    if ( isFile( resolvePath ) ) {
-      absolutePath = resolvePath;
-    } else {
-      tempPath = resolvePath + directoryIndex;
-      fileCheck = new File( tempPath );
-
-      while ( fileCheck.exists() == false ) {
+      while( index.hasNext() ) {
         directoryIndex = index.next();
-        tempPath = resolvePath + directoryIndex;
+        tempPath = modifiedUri + directoryIndex;
         fileCheck = new File( tempPath );
+        
+        if( fileCheck.exists() ) {
+          endOfPath = directoryIndex;
+          break;
+        }
       }
-      
-      resolvePath = tempPath;
-      absolutePath = resolvePath;
     }
-    
-    createFile(absolutePath);
-    return absolutePath;
+    absolutePath = modifiedUri + endOfPath;
   }
 
-  public String getAbsolutePath() {
-    return absolutePath;
-  }
-
-  public void parseUri() { 
-      String path;  
-      File file = new File( requestUri );
-      path = file.getPath();
-      firstSegment = path.replaceAll(file.getName(),"");
-      lastSegment = path.substring( path.lastIndexOf( '/' ) + 1 );
-
-      if( firstSegment.equals( "/" ) && !lastSegment.equals("") ) {
-        firstSegment += lastSegment + "/";
-        lastSegment = "";
-      }
-  }
-
-  public void createFile( String path ) {
+  private void createFile( String path ) {
     file = new File( path );
   } 
 
@@ -124,55 +104,57 @@ public class Resource {
     return file;
   }
 
-  public boolean isAlias() {
-    return ( httpdConf.aliasesContainsKey( firstSegment ) || 
-      httpdConf.aliasesContainsKey( firstSegment + lastSegment + "/" ) );
+  private boolean aliasContainsDocumentRoot() {
+    return ( conf.lookupAlias( "/" + directoryPath + 
+      "/" ).contains(conf.getDocumentRoot() ) );
   }
 
-  public boolean isScriptAlias() {
-    return ( httpdConf.scriptedAliasesContainsKey( firstSegment ) || 
-      httpdConf.scriptedAliasesContainsKey( firstSegment + lastSegment + "/" ));
+  private boolean scriptAliasContainsDocumentRoot() {
+    return ( conf.lookupScriptAlias( "/" + directoryPath + 
+      "/").contains( conf.getDocumentRoot() ) );
   }
 
-  public boolean isProtected() {
-    String directory = null;
-    File tempPath = new File( absolutePath );
-    boolean check = false;
-
-    while ( check == false ) {
-      directory = tempPath.getParent();
-      tempPath = new File( directory );
-      check = new File( directory, httpdConf.getAccessFileName() ).exists();
-      
-      if (directory.equals( httpdConf.getDocumentRoot())) {
-        break;
-      }
-    }
-    return check;
-  }
-
-  public boolean isFile( String path ) {
+  private boolean isFile( String path ) {
     File tempFile = new File( path );
     return tempFile.isFile();
   }
 
-  public String getFirstSegment() {
-    return firstSegment;
+  public boolean isAlias() {
+    isAlias = conf.aliasesContainsKey( "/" + directoryPath + "/" );
+    return isAlias;
   }
 
-  public String getLastSegment() {
-    return lastSegment;
+  public boolean isScriptAlias() {
+    isScript = conf.scriptedAliasesContainsKey( "/" + directoryPath + "/" );
+    return isScript;
+  }
+
+  public boolean isScript() {
+    return isScript;
+  }
+
+  public boolean isProtected() {
+    String directory = absolutePath;
+    File tempPath = new File( directory );
+
+    while ( isProtected == false ) {
+      tempPath = new File( directory );
+      isProtected = new File( directory, conf.getAccessFileName() ).exists();
+      directory = tempPath.getParent() + "/";
+      if (directory.equals( conf.getDocumentRoot() ) ) {
+        break;
+      }
+    }
+    return isProtected;
   }
   
   public String getMimeType() {
     String[] pathTokens;
-    String extension, mime;
+    String extension;
     
     pathTokens = absolutePath.split("\\.");
     extension = pathTokens[ pathTokens.length - 1 ];
     
-    mime = mimeType.lookup( extension );
-    
-    return mime;
+    return mime.lookup( extension );
   }
 }
