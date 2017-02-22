@@ -1,4 +1,6 @@
 import ServerExceptions.*;
+import java.io.IOException;
+import java.io.File;
 
 public class ResponseFactory {
   public static Response getResponse( Request request, Resource resource, 
@@ -7,25 +9,30 @@ public class ResponseFactory {
     Response response = null;
     
     if( exception instanceof BadRequestException ) {
-      //response = new BadRequestException( resource );
-    } else if( exception instanceof CreatedException ) {
-      //response = new CreatedResponse( resource );
-    } else if( exception instanceof ForbiddenException ) {
-      //response = new ForbiddenResponse( resource );
-    } else if( exception instanceof InternalServerErrorException ) {
-      //response = new InternalServerErrorResponse( resource );
-    } else if( exception instanceof NoContentException ) {
-      //response = new NoContentResponse( resource );
-    } else if( exception instanceof NotFoundException ) {
-      //response = new NotFoundResponse( resource );
-    } else if( exception instanceof NotModifiedException ) {
-      //response = new NotModifiedResponse( resource );
-    } else if( exception instanceof OKException ) {
-      response = new OKResponse( resource );
+      response = new BadRequestResponse( resource );
     } else if( exception instanceof UnauthorizedException) {
-      //response = new UnauthorizedResponse( resource );
+    } else if( exception instanceof ForbiddenException ) {
+    } else if( exception instanceof NotFoundException ) {
+      response = new NotFoundException( resource );
+    } else if( exception instanceof InternalServerErrorException ) {
     } 
     
     return response;
   }
+  
+  public static Response getResponse( Request request, Resource resource ) 
+      throws IOException {
+    Response response = null;
+    String requestMethod;
+    
+    requestMethod = request.getVerb();
+    
+    if(requestMethod.equals("GET")) {
+      response = new OKResponse( resource );
+      response.setRequestMethod(requestMethod );
+    }
+    
+    return response;
+  }
+  
 }
