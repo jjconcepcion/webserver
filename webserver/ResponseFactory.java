@@ -23,11 +23,9 @@ public class ResponseFactory {
   public static Response getResponse( Request request, Resource resource ) 
       throws IOException {
     Response response = null;
-    String requestMethod;
+    String requestMethod = request.getVerb();
     
-    requestMethod = request.getVerb();
-    
-    if(requestMethod.equals("GET")) {
+    if( requestMethod.equals("GET") || requestMethod.equals("HEAD") ) {
       response = new OKResponse( resource );
       response.setRequestMethod(requestMethod );
     }
