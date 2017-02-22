@@ -16,6 +16,7 @@ public abstract class Response {
   protected Resource resource;
   protected byte[] body;
   protected String requestVerb;
+  protected String setHeaders;
   
   public Response( Resource resource ) {
     this.resource = resource;
@@ -37,7 +38,7 @@ public abstract class Response {
   protected void sendStatusLine( BufferedWriter out ) throws IOException {
     String statusLine = HTTP_VERSION + " " + code + " " + reasonPhrase + CRLF;
     
-    out.write(statusLine);
+    out.write( statusLine );
     out.flush();
   }
   
@@ -46,7 +47,7 @@ public abstract class Response {
       
     String headerLine = field + ": " + value + CRLF;
     
-    out.write(headerLine);
+    out.write( headerLine );
     out.flush();
   }
   
@@ -60,4 +61,14 @@ public abstract class Response {
     requestVerb = verb;
   }
   
+  public void setHeaderLine( String field, String value ) {
+    setHeaders += field + ": " + value + CRLF;
+  }
+  
+  protected void sendSetHeaders( BufferedWriter out ) throws IOException {
+    if( setHeaders != null ) {
+      out.write( setHeaders );
+      out.flush();
+    }
+  }
 }
