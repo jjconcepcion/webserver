@@ -3,17 +3,14 @@ import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Iterator;
 
 public class Resource {
   private HttpdConf conf;
   private String uri;
-  private String filePath;
   private String directoryPath;
   private String directoryIndex;
   private String absolutePath;
-  private String htpassword;
   private File file;
   private MimeTypes mime;
   private ListIterator<String> index;
