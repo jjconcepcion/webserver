@@ -13,7 +13,7 @@ public class ResponseFactory {
     } else if( exception instanceof UnauthorizedException) {
     } else if( exception instanceof ForbiddenException ) {
     } else if( exception instanceof NotFoundException ) {
-      response = new NotFoundException( resource );
+      response = new NotFoundResponse( resource );
     } else if( exception instanceof InternalServerErrorException ) {
     } 
     
