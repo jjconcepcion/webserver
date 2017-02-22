@@ -1,4 +1,5 @@
 import ServerExceptions.*;
+import java.time.LocalDateTime;
 import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
@@ -50,6 +51,13 @@ public class ResponseFactory {
       
       response.setHeaderLine( "Last-Modified", modifiedDate.toString() );
       response.setHeaderLine( "Cache-Control: ", "max-age=3600" );
+      
+      FormattedDate expiration = new FormattedDate(
+        LocalDateTime.now().plusSeconds(3600)
+      );
+      
+      response.setHeaderLine( "Expires: ", expiration.toString() );
+      
     } else if( requestMethod.equals( "PUT" ) ) {
       
       File putFile = new File( filePath.toString() );
