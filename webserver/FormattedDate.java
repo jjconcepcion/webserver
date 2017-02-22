@@ -2,6 +2,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.ZonedDateTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.Instant;
 
 public class FormattedDate {
   private LocalDateTime date;
@@ -11,6 +12,12 @@ public class FormattedDate {
   
   public FormattedDate( LocalDateTime date ) {
     this.date = date;
+  }
+  
+  public FormattedDate( long milliseconds ) {
+    Instant instant = Instant.ofEpochMilli( milliseconds );
+    ZonedDateTime zonedDateTime = instant.atZone( ZoneId.of ( "GMT" ));
+    date = zonedDateTime.toLocalDateTime();
   }
   
   public String toString() {

@@ -18,6 +18,7 @@ public class OKResponse extends Response {
     this.setBodyDataFrom( this.resource.absolutePath() );
     
     this.sendCommonPreamble( out );
+    this.sendSetHeaders( out );
     this.sendHeaderLine( out, "Content-Type", this.resource.getMimeType() );
     this.sendHeaderLine(
       out, "Content-Length", String.valueOf( this.body.length ) 
@@ -27,7 +28,6 @@ public class OKResponse extends Response {
     out.flush();
     
     if( this.requestVerb.equals("GET") ) {
-      
       outputStream.write( body );
       outputStream.flush();
     }
