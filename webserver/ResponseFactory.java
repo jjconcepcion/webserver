@@ -1,6 +1,10 @@
 import ServerExceptions.*;
 import java.io.IOException;
 import java.io.File;
+import java.nio.file.Files;
+import java.io.FileOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class ResponseFactory {
   public static Response getResponse( Request request, Resource resource, 
@@ -23,11 +27,29 @@ public class ResponseFactory {
   public static Response getResponse( Request request, Resource resource ) 
       throws IOException {
     Response response = null;
-    String requestMethod = request.getVerb();
+    Path filePath;
+    String requestMethod; 
+    FormattedDate modifiedDate;
     
-    if( requestMethod.equals("GET") || requestMethod.equals("HEAD") ) {
+    filePath = Paths.get( resource.getAbsolutePath() );
+    requestMethod = request.getVerb();
+    
+    modifiedDate = new FormattedDate(
+      Files.getLastModifiedTime( filePath ).toMillis()
+    );
+    
+    if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ) {
       response = new OKResponse( resource );
       response.setRequestMethod(requestMethod );
+      response.setHeaderLine( "Last-Modified", modifiedDate.toString() );
+      
+    } else if( requestMethod.equals( "PUT" ) ) {
+      File putFile = new File( filePath.toString() );
+      FileOutputStream fileOut = new FileOutputStream( putFile, false );
+  
+      fileOut.write( request.getBody() );
+      fileOut.close();
+      
     }
     
     return response;
