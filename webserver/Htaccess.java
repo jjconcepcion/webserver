@@ -11,8 +11,12 @@ public class Htaccess extends ConfigurationReader {
   private boolean validUser; // allow all valid users
   private boolean user; // allow listed users 
 
-  public Htaccess (String fileName ) throws FileNotFoundException {
+  public Htaccess (String fileName ) 
+      throws FileNotFoundException, IOException {
     super( fileName );
+    directives = new HashMap<String,String>();
+    users = new LinkedList<String>();
+    load();
   }
 
   public void load() throws IOException {
@@ -27,7 +31,8 @@ public class Htaccess extends ConfigurationReader {
     }
   }
 
-  public void parse( String line ) throws FileNotFoundException {
+  public void parse( String line ) 
+      throws FileNotFoundException, IOException {
     StringTokenizer tokens = new StringTokenizer( line );
     String directive;
 
@@ -35,15 +40,12 @@ public class Htaccess extends ConfigurationReader {
     
     switch( directive ) {
       case "AuthUserFile": 
+      
         String authUserFilePath = tokens.nextToken().replace( "\"", "" ); 
         directives.put( directive, authUserFilePath );
 
-        try {
-          userFile = new Htpassword( authUserFilePath );
-          userFile.load();
-        } catch ( IOException e ) {
-          System.exit(0);
-        }
+        userFile = new Htpassword( authUserFilePath );
+        userFile.load();
 
         break;
       case "AuthType":
@@ -52,15 +54,14 @@ public class Htaccess extends ConfigurationReader {
         
         break;
       case "AuthName":
-        String authName = tokens.nextToken().replace( "\"", "" );
-        while (tokens.hasMoreTokens()) {
-          authName += " ";
-          authName += tokens.nextToken().replace( "\"", "" );
-        }
+        String authName;
+        authName = line.replaceFirst( "AuthName ", "" ).replace( "\"" , "");
+        directives.put( directive, authName );
         
         break;
       case "Require":
         String require = tokens.nextToken();
+        directives.put( directive, require );
         validUser = require.equals("valid-user");
         user = require.equals("user");
         
