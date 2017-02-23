@@ -3,6 +3,7 @@ import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
 public class Resource {
