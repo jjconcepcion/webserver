@@ -85,14 +85,22 @@ public class ResponseFactory {
   
   public static void checkValidAccessFor( Request request, Resource resource )
       throws ServerException, IOException {
+    Htaccess access = new Htaccess("/home/foxtrot/class/Spring2017/CSC667/server/public_html/.htaccess");
+      
     String credentials = request.lookupHeader( "Authorization" );
     
-    System.out.println( credentials );
-    
-    System.out.println("checkValidAccessFor():");
-    if( credentials == null ) {
+    if(credentials == null ) {
       throw new UnauthorizedException();
     }
+    
+    String authInfo = credentials.split("\\s")[1];
+    
+    if( !access.isAuthorized( authInfo ) ) {
+      throw new UnauthorizedException();
+    }
+    
+    System.out.println( credentials );
+    System.out.println( authInfo );
     
   }
 }
