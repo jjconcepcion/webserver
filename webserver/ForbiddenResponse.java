@@ -16,7 +16,7 @@ public class ForbiddenResponse extends Response {
     );
     
     String body = "<html><head><title>403 Forbidden</title></head><body>" 
-      + "<h1>401 - Forbidden</h1></body></html>";
+      + "<h1>403 - Forbidden</h1></body></html>";
     
     this.sendCommonPreamble( out );
     this.sendSetHeaders( out );
