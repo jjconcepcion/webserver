@@ -12,6 +12,7 @@ public class Resource {
   private String directoryPath;
   private String directoryIndex;
   private String absolutePath;
+  private String accessFilePath;
   private File file;
   private MimeTypes mimes;
   private ListIterator<String> indexes;
@@ -27,14 +28,15 @@ public class Resource {
     isScript = false;
     isProtected = false;
     indexes = conf.getDirectoryIndexes();
-    resolveAbsolutePath();
+    this.resolveAbsolutePath();
+    this.resolveAccessFilePath();
   }
 
   public String absolutePath() {
     return absolutePath;
   }
 
- // Instantiates absolutePath and sets isScript to true if script-aliased
+ // Initialize absolutePath and sets isScript to true if script-aliased
   public void resolveAbsolutePath() {
     absolutePath = "";
     
@@ -47,7 +49,6 @@ public class Resource {
       
       while( tokens.hasMoreTokens() ) {
         temporaryPath += tokens.nextToken();
-        
         if( tokens.hasMoreTokens() || isDirectory ) {
           temporaryPath += "/" ;
         }
@@ -67,7 +68,7 @@ public class Resource {
       }
       
       if( absolutePath.equals( "" ) ) {
-        absolutePath = conf.getDocumentRoot() + uri.replaceFirst( "/", "");
+        absolutePath = conf.getDocumentRoot() + uri.replaceFirst( "/", "" );
       }
     }
     
@@ -77,7 +78,7 @@ public class Resource {
   }
   
   private String remainingPath( StringTokenizer tokens, 
-      boolean trailingSlash ) {
+    boolean trailingSlash ) {
     String remainder = "";
     
     while( tokens.hasMoreTokens() ) {
@@ -87,17 +88,16 @@ public class Resource {
         remainder += "/";
       }
     }
-
     return remainder;
   }
   
   private void addDirectoryIndexToAbsolutePath() {
     directoryIndex = "";
+    Path tempPath;
     
-    while( directoryIndex.equals("") && indexes.hasNext() ) {
+    while( directoryIndex.equals("") || indexes.hasNext() ) {
       directoryIndex = indexes.next();
     }
-    
     absolutePath += directoryIndex;
   }
   
@@ -114,16 +114,6 @@ public class Resource {
   }
   
   public boolean isProtected() {
-    String directory = absolutePath;
-    File tempPath = new File( directory );
-    while ( isProtected == false ) {
-      tempPath = new File( directory );
-      directory = tempPath.getParent() + "/";
-      isProtected = new File( directory, conf.getAccessFileName() ).exists();
-      if (directory.equals( conf.getDocumentRoot()) ) {
-        break;
-      }
-    }
     return isProtected;
   }
   
@@ -135,5 +125,25 @@ public class Resource {
     extensions = pathTokens[ pathTokens.length - 1 ];
     
     return mimes.lookup( extensions );
+  }
+
+  private void resolveAccessFilePath() {
+    accessFilePath = absolutePath;
+    Path tempPath;
+    while( isProtected == false ) {
+      tempPath = Paths.get( accessFilePath );
+      isProtected = tempPath.resolve( conf.getAccessFileName() ).toFile().exists();
+      if( accessFilePath.equals( conf.getDocumentRoot() ) ) {
+        break;
+      }
+      accessFilePath = tempPath.getParent() + "/";
+    }
+    if ( isProtected == true ) {
+      accessFilePath += conf.getAccessFileName();
+    }
+  }
+
+  public String accessFilePath() {
+    return accessFilePath;
   }
 }

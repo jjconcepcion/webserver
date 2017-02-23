@@ -16,7 +16,9 @@ public class ResponseFactory {
     if( exception instanceof BadRequestException ) {
       response = new BadRequestResponse( resource );
     } else if( exception instanceof UnauthorizedException) {
+      response = new UnauthorizedResponse( resource );
     } else if( exception instanceof ForbiddenException ) {
+      response = new ForbiddenResponse( resource );
     } else if( exception instanceof NotFoundException ) {
       response = new NotFoundResponse( resource );
     } else if( exception instanceof InternalServerErrorException ) {
@@ -26,15 +28,26 @@ public class ResponseFactory {
   }
   
   public static Response getResponse( Request request, Resource resource ) 
-      throws IOException {
+      throws IOException, NotFoundException {
     Response response = null;
     Path filePath;
     String requestMethod; 
     FormattedDate modifiedDate;
     
-    filePath = Paths.get( resource.getAbsolutePath() );
+    filePath = Paths.get( resource.absolutePath() );
     requestMethod = request.getVerb();
     
+    try {
+      checkValidAccessFor( request, resource );
+      
+    } catch( ServerException exception ) {
+      return getResponse( request, resource, exception );
+    }
+    
+    if( !Files.exists( filePath )) {
+      throw new NotFoundException();
+    }
+
     modifiedDate = new FormattedDate(
       Files.getLastModifiedTime( filePath ).toMillis()
     );
@@ -71,4 +84,25 @@ public class ResponseFactory {
     return response;
   }
   
+  public static void checkValidAccessFor( Request request, Resource resource )
+      throws ServerException, IOException {
+    Htaccess access = new Htaccess("/home/foxtrot/class/Spring2017/CSC667/server/public_html/.htaccess");
+      
+    String credentials = request.lookupHeader( "Authorization" );
+    
+    if(credentials == null ) {
+      throw new UnauthorizedException();
+    }
+    
+    String authInfo = credentials.split("\\s")[1];
+    
+    if( !access.isAuthorized( authInfo ) ) {
+      throw new UnauthorizedException();
+    }
+    
+    if( !access.isValid( authInfo ) ) {
+      throw new ForbiddenException();
+    }
+    
+  }
 }
