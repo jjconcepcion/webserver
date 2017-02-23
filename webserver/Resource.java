@@ -34,7 +34,7 @@ public class Resource {
     return absolutePath;
   }
 
- // Instantiates absolutePath and sets isScript to true if script-aliased
+ // Initialize absolutePath and sets isScript to true if script-aliased
   public void resolveAbsolutePath() {
     absolutePath = "";
     
