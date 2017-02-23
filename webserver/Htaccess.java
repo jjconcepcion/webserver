@@ -1,13 +1,15 @@
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
 public class Htaccess extends ConfigurationReader {
+  private HashMap<String,String> directives;
+  private LinkedList<String> users;
   private Htpassword userFile;
-  private String authType;
-  private String authName;
-  private String require;
-  private String authUserFilePath;
+  private boolean validUser; // allow all valid users
+  private boolean user; // allow listed users 
 
   public Htaccess (String fileName ) throws FileNotFoundException {
     super( fileName );
@@ -33,49 +35,60 @@ public class Htaccess extends ConfigurationReader {
     
     switch( directive ) {
       case "AuthUserFile": 
-        authUserFilePath = tokens.nextToken().replace( "\"", "" ); 
-        userFile = new Htpassword( authUserFilePath );
+        String authUserFilePath = tokens.nextToken().replace( "\"", "" ); 
+        directives.put( directive, authUserFilePath );
 
-      try {
-        userFile.load();
-      } catch ( IOException e ) {
-        System.exit(0);
-      }
-
+        try {
+          userFile = new Htpassword( authUserFilePath );
+          userFile.load();
+        } catch ( IOException e ) {
+          System.exit(0);
+        }
 
         break;
       case "AuthType":
-        authType = tokens.nextToken();
+        String authType = tokens.nextToken();
+        directives.put( directive, authType );
+        
         break;
       case "AuthName":
-        authName = tokens.nextToken().replace( "\"", "" );
+        String authName = tokens.nextToken().replace( "\"", "" );
         while (tokens.hasMoreTokens()) {
           authName += " ";
           authName += tokens.nextToken().replace( "\"", "" );
         }
+        
         break;
       case "Require":
-        require = tokens.nextToken();
+        String require = tokens.nextToken();
+        validUser = require.equals("valid-user");
+        user = require.equals("user");
+        
+        if( user ) {
+          while( tokens.hasMoreTokens() ) {
+            users.add( tokens.nextToken() );
+          }
+        }
         break;
     }
   }
 
-  public boolean isAuthorized( String username, String password ) {
-    return (userFile.isAuthorized( username, password) );
+  public boolean isAuthorized( String  authInfo) {
+    return userFile.isAuthorized( authInfo );
   }
 
   public String getAuthUserFilePath() {
-    return authUserFilePath;
+    return directives.get("AuthUserFile");
 
   }
   public String getAuthType() {
-    return authType;
+    return directives.get("AuthType");
   }
 
   public String getAuthName() {
-    return authName;
+    return directives.get("AuthName");
   }
   public String getRequire() {
-    return require;
+    return directives.get("Require");
   }
 }
