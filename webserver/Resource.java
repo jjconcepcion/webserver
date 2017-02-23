@@ -47,7 +47,6 @@ public class Resource {
       
       while( tokens.hasMoreTokens() ) {
         temporaryPath += tokens.nextToken();
-        
         if( tokens.hasMoreTokens() || isDirectory ) {
           temporaryPath += "/" ;
         }
@@ -67,7 +66,7 @@ public class Resource {
       }
       
       if( absolutePath.equals( "" ) ) {
-        absolutePath = conf.getDocumentRoot() + uri.replaceFirst( "/", "");
+        absolutePath = conf.getDocumentRoot() + uri.replaceFirst( "/", "" );
       }
     }
     
@@ -77,7 +76,7 @@ public class Resource {
   }
   
   private String remainingPath( StringTokenizer tokens, 
-      boolean trailingSlash ) {
+    boolean trailingSlash ) {
     String remainder = "";
     
     while( tokens.hasMoreTokens() ) {
@@ -87,17 +86,16 @@ public class Resource {
         remainder += "/";
       }
     }
-
     return remainder;
   }
   
   private void addDirectoryIndexToAbsolutePath() {
     directoryIndex = "";
     
-    while( directoryIndex.equals("") && indexes.hasNext() ) {
+    while( directoryIndex.equals("") || indexes.hasNext() ) {
       directoryIndex = indexes.next();
     }
-    
+
     absolutePath += directoryIndex;
   }
   
@@ -114,15 +112,16 @@ public class Resource {
   }
   
   public boolean isProtected() {
-    String directory = absolutePath;
-    File tempPath = new File( directory );
-    while ( isProtected == false ) {
-      tempPath = new File( directory );
-      directory = tempPath.getParent() + "/";
-      isProtected = new File( directory, conf.getAccessFileName() ).exists();
-      if (directory.equals( conf.getDocumentRoot()) ) {
+    String path = absolutePath;
+    Path tempPath;
+
+    while( isProtected == false ) {
+      tempPath = Paths.get( path );
+      isProtected = tempPath.resolve( conf.getAccessFileName() ).toFile().exists();
+      if( path.equals( conf.getDocumentRoot() ) ) {
         break;
       }
+      path = tempPath.getParent() + "/";
     }
     return isProtected;
   }
