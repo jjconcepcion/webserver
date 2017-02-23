@@ -84,7 +84,7 @@ public class Request {
     inputStream.read( body, 0, byteSize );
   }
   
-  private Boolean isValidVerb( String verb ) {
+  private boolean isValidVerb( String verb ) {
     return Arrays.asList( validVerbs ).contains( verb );
   }
   
@@ -104,11 +104,19 @@ public class Request {
     return headers.get( header );
   }
   
-  public Boolean hasBody() {
+  public boolean hasBody() {
     return lookupHeader( "Content-Length" ) != null;
   }
   
   public byte[] getBody() {
     return body;
+  }
+  
+  public boolean isConditional() {
+    return headers.get( "If-Modified-Since" ) != null;
+  }
+  
+  public String modifiedDate() {
+    return headers.get( "If-Modified-Since" );
   }
 }

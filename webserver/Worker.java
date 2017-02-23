@@ -26,9 +26,6 @@ public class Worker extends Thread {
       
       resource = new Resource( request.getUri(), config, mimes );
       
-      System.out.println("WORKER:run()");
-      System.out.println(resource.getAbsolutePath());
-      
       response = ResponseFactory.getResponse( request, resource );
       
     } catch( ServerException exception ) {

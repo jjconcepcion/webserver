@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public abstract class Response {
   protected static final String HTTP_VERSION = "HTTP/1.1";
@@ -16,6 +17,7 @@ public abstract class Response {
   protected Resource resource;
   protected byte[] body;
   protected String requestVerb;
+  protected String setHeaders = "";
   
   public Response( Resource resource ) {
     this.resource = resource;
@@ -37,7 +39,7 @@ public abstract class Response {
   protected void sendStatusLine( BufferedWriter out ) throws IOException {
     String statusLine = HTTP_VERSION + " " + code + " " + reasonPhrase + CRLF;
     
-    out.write(statusLine);
+    out.write( statusLine );
     out.flush();
   }
   
@@ -46,18 +48,26 @@ public abstract class Response {
       
     String headerLine = field + ": " + value + CRLF;
     
-    out.write(headerLine);
+    out.write( headerLine );
     out.flush();
   }
   
-  protected void setBodyDataFrom( File file ) throws IOException {
-    Path filePath = file.toPath();
-    
-    body = Files.readAllBytes( filePath );
+  protected void setBodyDataFrom( String filePath ) throws IOException {
+    body = Files.readAllBytes( Paths.get(filePath) );
   }
   
   public void setRequestMethod( String verb ) {
     requestVerb = verb;
   }
   
+  public void setHeaderLine( String field, String value ) {
+    setHeaders += field + ": " + value + CRLF;
+  }
+  
+  protected void sendSetHeaders( BufferedWriter out ) throws IOException {
+    if( setHeaders != null ) {
+      out.write( setHeaders );
+      out.flush();
+    }
+  }
 }
