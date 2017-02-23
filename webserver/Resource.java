@@ -119,10 +119,6 @@ public class Resource {
     return tempFile.isFile();
   }
 
-  public MimeTypes getMimeType() {
-    return mime;
-  }
-
   public boolean isAlias() {
     isAlias = conf.aliasesContainsKey( "/" + directoryPath + "/" );
     return isAlias;
@@ -150,5 +146,15 @@ public class Resource {
       }
     }
     return isProtected;
+  }
+  
+  public String getMimeType() {
+    String[] pathTokens;
+    String extension;
+    
+    pathTokens = absolutePath.split("\\.");
+    extension = pathTokens[ pathTokens.length - 1 ];
+    
+    return mime.lookup( extension );
   }
 }

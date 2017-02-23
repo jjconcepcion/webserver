@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import ServerExceptions.*;
 
 public class RequestTest {
   public static final int DEFAULT_PORT = 3100;
@@ -12,7 +13,12 @@ public class RequestTest {
 
     client = socket.accept();
     request = new Request( client.getInputStream() );
-    request.parse();
+    try {
+      request.parse();
+    } catch( BadRequestException e ) {
+      System.out.println( "Exception: " + e.getMessage() );
+      System.exit(1);
+    }
     
     printStartLine( request );
     
