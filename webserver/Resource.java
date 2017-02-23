@@ -92,7 +92,7 @@ public class Resource {
   private void addDirectoryIndexToAbsolutePath() {
     directoryIndex = "";
     
-    while( directoryIndex.equals("") && indexes.hasNext() ) {
+    while( directoryIndex.equals("") || indexes.hasNext() ) {
       directoryIndex = indexes.next();
     }
 
