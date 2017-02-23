@@ -37,13 +37,16 @@ public class ResponseFactory {
     filePath = Paths.get( resource.absolutePath() );
     requestMethod = request.getVerb();
     
-    try {
-      checkValidAccessFor( request, resource );
-      
-    } catch( ServerException exception ) {
-      return getResponse( request, resource, exception );
+    if( resource.isProtected() ) {
+      try {
+        // throws UnauthorizedException or ForbiddenException
+        checkValidAccessFor( request, resource );
+        
+      } catch( ServerException exception ) {
+        return getResponse( request, resource, exception );
+      }
     }
-    
+   
     if( !Files.exists( filePath )) {
       throw new NotFoundException();
     }
@@ -55,7 +58,7 @@ public class ResponseFactory {
     if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ) {
     
       if( request.isConditional() &&
-          request.modifiedDate().equals( modifiedDate.toString() )) {
+        request.modifiedDate().equals( modifiedDate.toString() )) {
         response = new NotModifiedResponse( resource );
       } else {
         response = new OKResponse( resource );
@@ -86,7 +89,7 @@ public class ResponseFactory {
   
   public static void checkValidAccessFor( Request request, Resource resource )
       throws ServerException, IOException {
-    Htaccess access = new Htaccess("/home/foxtrot/class/Spring2017/CSC667/server/public_html/.htaccess");
+    Htaccess access = new Htaccess( resource.accessFilePath() );
       
     String credentials = request.lookupHeader( "Authorization" );
     
