@@ -38,7 +38,7 @@ public class ResponseFactory {
     if( !Files.exists( filePath )) {
       throw new NotFoundException();
     }
-    
+
     modifiedDate = new FormattedDate(
       Files.getLastModifiedTime( filePath ).toMillis()
     );
