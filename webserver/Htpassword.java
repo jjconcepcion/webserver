@@ -49,6 +49,12 @@ public class Htpassword extends ConfigurationReader {
 
     return verifyPassword( tokens[0], tokens[1] );
   }
+  
+  public static String decode( String authInfo ) {
+    return new String(
+      Base64.getDecoder().decode( authInfo ), Charset.forName( "UTF-8" )
+    );
+  }
 
   private boolean verifyPassword( String username, String password ) {
     // encrypt the password, and compare it to the password stored
