@@ -12,6 +12,7 @@ public class Resource {
   private String directoryPath;
   private String directoryIndex;
   private String absolutePath;
+  private String accessFilePath;
   private File file;
   private MimeTypes mimes;
   private ListIterator<String> indexes;
@@ -27,7 +28,8 @@ public class Resource {
     isScript = false;
     isProtected = false;
     indexes = conf.getDirectoryIndexes();
-    resolveAbsolutePath();
+    this.resolveAbsolutePath();
+    this.resolveAccessFilePath();
   }
 
   public String absolutePath() {
@@ -91,11 +93,11 @@ public class Resource {
   
   private void addDirectoryIndexToAbsolutePath() {
     directoryIndex = "";
+    Path tempPath;
     
     while( directoryIndex.equals("") || indexes.hasNext() ) {
       directoryIndex = indexes.next();
     }
-
     absolutePath += directoryIndex;
   }
   
@@ -112,17 +114,6 @@ public class Resource {
   }
   
   public boolean isProtected() {
-    String path = absolutePath;
-    Path tempPath;
-
-    while( isProtected == false ) {
-      tempPath = Paths.get( path );
-      isProtected = tempPath.resolve( conf.getAccessFileName() ).toFile().exists();
-      if( path.equals( conf.getDocumentRoot() ) ) {
-        break;
-      }
-      path = tempPath.getParent() + "/";
-    }
     return isProtected;
   }
   
@@ -134,5 +125,25 @@ public class Resource {
     extensions = pathTokens[ pathTokens.length - 1 ];
     
     return mimes.lookup( extensions );
+  }
+
+  private void resolveAccessFilePath() {
+    accessFilePath = absolutePath;
+    Path tempPath;
+    while( isProtected == false ) {
+      tempPath = Paths.get( accessFilePath );
+      isProtected = tempPath.resolve( conf.getAccessFileName() ).toFile().exists();
+      if( accessFilePath.equals( conf.getDocumentRoot() ) ) {
+        break;
+      }
+      accessFilePath = tempPath.getParent() + "/";
+    }
+    if ( isProtected == true ) {
+      accessFilePath += conf.getAccessFileName();
+    }
+  }
+  
+  public String getAccessFilePath() {
+    return accessFilePath;
   }
 }
