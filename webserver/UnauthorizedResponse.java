@@ -3,8 +3,8 @@ import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-public class NotFoundResponse extends Response {
-  public NotFoundResponse( Resource resource ) {
+public class UnauthorizedResponse extends Response {
+  public UnauthorizedResponse( Resource resource ) {
     super( resource );
     this.code = 401;
     this.reasonPhrase = "Unauthorized";
