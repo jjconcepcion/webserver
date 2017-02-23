@@ -12,7 +12,6 @@ public class MimeTypes extends ConfigurationReader {
   }
 
   public void load() throws IOException {
-    
     String line = null;
 
     while( hasMoreLines() ) {
@@ -38,14 +37,5 @@ public class MimeTypes extends ConfigurationReader {
 
   public String lookup(String extension ) {
     return types.get( extension );
-  }
-
-  // For testing only
-  
-  public void printHashMap() {
-    for ( String key : types.keySet() ) {
-      String value = types.get(key).toString();
-      System.out.println( "key: " + key + " " + "value: " + value);
-    }
   }
 }
