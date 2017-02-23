@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public abstract class Response {
   protected static final String HTTP_VERSION = "HTTP/1.1";
@@ -51,10 +52,8 @@ public abstract class Response {
     out.flush();
   }
   
-  protected void setBodyDataFrom( File file ) throws IOException {
-    Path filePath = file.toPath();
-    
-    body = Files.readAllBytes( filePath );
+  protected void setBodyDataFrom( String filePath ) throws IOException {
+    body = Files.readAllBytes( Paths.get(filePath) );
   }
   
   public void setRequestMethod( String verb ) {
