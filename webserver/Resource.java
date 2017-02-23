@@ -13,8 +13,8 @@ public class Resource {
   private String directoryIndex;
   private String absolutePath;
   private File file;
-  private MimeTypes mime;
-  private ListIterator<String> index;
+  private MimeTypes mimes;
+  private ListIterator<String> indexes;
   private boolean isScript;
   private boolean isAlias;
   private boolean isProtected;
@@ -26,7 +26,7 @@ public class Resource {
     isAlias = false;
     isScript = false;
     isProtected = false;
-    index = conf.getDirectoryIndexes();
+    indexes = conf.getDirectoryIndexes();
     resolveAbsolutePath();
   }
 
@@ -34,109 +34,85 @@ public class Resource {
     return absolutePath;
   }
 
-  private void resolveAbsolutePath() { 
-    Path path = Paths.get( uri );
-    Iterator<Path> iterator = path.iterator();
-    String tempPath;
-    String endOfPath = "";
-    String modifiedUri = conf.getDocumentRoot().substring(0,
-      conf.getDocumentRoot().length() -1 ) + uri;
-
-    while( iterator.hasNext() ) {
-      directoryPath = iterator.next().toString();
-
-      if( isAlias() ) {
-        while( iterator.hasNext() ) {
-          endOfPath = iterator.next().toString();
-        }
-
-        if( aliasContainsDocumentRoot() ) {
-          modifiedUri = conf.lookupAlias( "/" + directoryPath + "/" );
-        } else {
-        modifiedUri = conf.getDocumentRoot().substring(0, 
-          conf.getDocumentRoot().length() -1 ) + 
-            conf.lookupAlias( "/" + directoryPath + "/" );
-        }
-        break;
-      }
-
-      if( isScriptAlias() ) {
-        while( iterator.hasNext() ) {
-          endOfPath = iterator.next().toString();
-        }
-
-        if( scriptAliasContainsDocumentRoot() ) {
-          modifiedUri = conf.lookupScriptAlias( "/" + directoryPath + "/" );
-        } else {
-        modifiedUri = conf.getDocumentRoot().substring(0, 
-          conf.getDocumentRoot().length() -1 ) + 
-            conf.lookupScriptAlias( "/" + directoryPath + "/" );
-        }
-        break;
-      }
-    }
-
-    if( isFile( modifiedUri ) ) {
-      absolutePath = modifiedUri;
-    } else if( endOfPath == "" ) {
-      tempPath = modifiedUri;
-      File fileCheck;
-
-      while( index.hasNext() ) {
-        directoryIndex = index.next();
-        tempPath = modifiedUri + directoryIndex;
-        fileCheck = new File( tempPath );
+ // Instantiates absolutePath and sets isScript to true if script-aliased
+  public void resolveAbsolutePath() {
+    absolutePath = "";
+    
+    if( uri.equals( "/" ) ) {
+      absolutePath = conf.getDocumentRoot();
+    } else {
+      StringTokenizer tokens = new StringTokenizer( uri, "/" );
+      String temporaryPath = "/";
+      boolean isDirectory = this.uri.endsWith("/");
+      
+      while( tokens.hasMoreTokens() ) {
+        temporaryPath += tokens.nextToken();
         
-        if( fileCheck.exists() ) {
-          endOfPath = directoryIndex;
+        if( tokens.hasMoreTokens() || isDirectory ) {
+          temporaryPath += "/" ;
+        }
+        
+        if( isAlias( temporaryPath.toString() ) ) {
+          absolutePath = conf.lookupAlias( temporaryPath ) + 
+            remainingPath( tokens, isDirectory );
           break;
         }
+        
+        if( isScriptAlias( temporaryPath ) ) {
+          absolutePath = conf.lookupScriptAlias( temporaryPath ) +
+            remainingPath( tokens, isDirectory );
+            this.isScript = true;
+            break;
+        }
+      }
+      
+      if( absolutePath.equals( "" ) ) {
+        absolutePath = conf.getDocumentRoot() + uri.replaceFirst( "/", "");
       }
     }
-    absolutePath = modifiedUri + endOfPath;
+    
+    if( absolutePath.endsWith("/") ) {
+      addDirectoryIndexToAbsolutePath();
+    }
   }
+  
+  private String remainingPath( StringTokenizer tokens, 
+      boolean trailingSlash ) {
+    String remainder = "";
+    
+    while( tokens.hasMoreTokens() ) {
+      remainder += tokens.nextToken();
+      
+      if( tokens.hasMoreTokens() || trailingSlash ) {
+        remainder += "/";
+      }
+    }
 
-  private void createFile( String path ) {
-    file = new File( path );
-  } 
-
-  public File getFile() {
-    return file;
+    return remainder;
   }
-
-  private boolean aliasContainsDocumentRoot() {
-    return ( conf.lookupAlias( "/" + directoryPath + 
-      "/" ).contains(conf.getDocumentRoot() ) );
+  
+  private void addDirectoryIndexToAbsolutePath() {
+    directoryIndex = "";
+    
+    while( directoryIndex.equals("") && indexes.hasNext() ) {
+      directoryIndex = indexes.next();
+    }
+    
+    absolutePath += directoryIndex;
   }
-
-  private boolean scriptAliasContainsDocumentRoot() {
-    return ( conf.lookupScriptAlias( "/" + directoryPath + 
-      "/").contains( conf.getDocumentRoot() ) );
+  
+  private boolean isAlias(String path) {
+    return conf.lookupAlias( path ) != null ;
   }
-
-  private boolean isFile( String path ) {
-    File tempFile = new File( path );
-    return tempFile.isFile();
+  
+  private boolean isScriptAlias(String path) {
+    return conf.lookupScriptAlias( path ) != null ;
   }
-
-  public MimeTypes getMimeType() {
-    return mime;
-  }
-
-  public boolean isAlias() {
-    isAlias = conf.aliasesContainsKey( "/" + directoryPath + "/" );
-    return isAlias;
-  }
-
-  public boolean isScriptAlias() {
-    isScript = conf.scriptedAliasesContainsKey( "/" + directoryPath + "/" );
-    return isScript;
-  }
-
+  
   public boolean isScript() {
     return isScript;
   }
-
+  
   public boolean isProtected() {
     String directory = absolutePath;
     File tempPath = new File( directory );
@@ -149,5 +125,15 @@ public class Resource {
       }
     }
     return isProtected;
+  }
+  
+  public String getMimeTypes() {
+    String[] pathTokens;
+    String extensions;
+    
+    pathTokens = absolutePath.sptit("\\.");
+    extensions = pathTokens[ pathTokens.length - 1 ];
+    
+    return mimes.lookup( extensions );
   }
 }
