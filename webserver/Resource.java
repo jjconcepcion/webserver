@@ -114,15 +114,16 @@ public class Resource {
   }
   
   public boolean isProtected() {
-    String directory = absolutePath;
-    File tempPath = new File( directory );
-    while ( isProtected == false ) {
-      tempPath = new File( directory );
-      directory = tempPath.getParent() + "/";
-      isProtected = new File( directory, conf.getAccessFileName() ).exists();
-      if (directory.equals( conf.getDocumentRoot()) ) {
+    String path = absolutePath;
+    Path tempPath;
+
+    while( isProtected == false ) {
+      tempPath = Paths.get( path );
+      isProtected = tempPath.resolve( conf.getAccessFileName() ).toFile().exists();
+      if( path.equals( conf.getDocumentRoot() ) ) {
         break;
       }
+      path = tempPath.getParent() + "/";
     }
     return isProtected;
   }
