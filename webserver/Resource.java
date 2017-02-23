@@ -127,7 +127,7 @@ public class Resource {
     return isProtected;
   }
   
-  public String getMimeTypes() {
+  public String getMimeType() {
     String[] pathTokens;
     String extensions;
     
