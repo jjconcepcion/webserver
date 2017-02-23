@@ -26,7 +26,7 @@ public class ResponseFactory {
   }
   
   public static Response getResponse( Request request, Resource resource ) 
-      throws IOException {
+      throws IOException, NotFoundException {
     Response response = null;
     Path filePath;
     String requestMethod; 
@@ -34,6 +34,10 @@ public class ResponseFactory {
     
     filePath = Paths.get( resource.getAbsolutePath() );
     requestMethod = request.getVerb();
+    
+    if( !Files.exists( filePath )) {
+      throw new NotFoundException();
+    }
     
     modifiedDate = new FormattedDate(
       Files.getLastModifiedTime( filePath ).toMillis()
