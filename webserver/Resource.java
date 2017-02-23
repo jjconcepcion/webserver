@@ -119,6 +119,10 @@ public class Resource {
     return tempFile.isFile();
   }
 
+  public MimeTypes getMimeType() {
+    return mime;
+  }
+
   public boolean isAlias() {
     isAlias = conf.aliasesContainsKey( "/" + directoryPath + "/" );
     return isAlias;
@@ -136,25 +140,14 @@ public class Resource {
   public boolean isProtected() {
     String directory = absolutePath;
     File tempPath = new File( directory );
-
     while ( isProtected == false ) {
       tempPath = new File( directory );
-      isProtected = new File( directory, conf.getAccessFileName() ).exists();
       directory = tempPath.getParent() + "/";
-      if (directory.equals( conf.getDocumentRoot() ) ) {
+      isProtected = new File( directory, conf.getAccessFileName() ).exists();
+      if (directory.equals( conf.getDocumentRoot()) ) {
         break;
       }
     }
     return isProtected;
-  }
-  
-  public String getMimeType() {
-    String[] pathTokens;
-    String extension;
-    
-    pathTokens = absolutePath.split("\\.");
-    extension = pathTokens[ pathTokens.length - 1 ];
-    
-    return mime.lookup( extension );
   }
 }
