@@ -18,6 +18,7 @@ public class ResponseFactory {
     } else if( exception instanceof UnauthorizedException) {
       response = new UnauthorizedResponse( resource );
     } else if( exception instanceof ForbiddenException ) {
+      response = new ForbiddenResponse( resource );
     } else if( exception instanceof NotFoundException ) {
       response = new NotFoundResponse( resource );
     } else if( exception instanceof InternalServerErrorException ) {
@@ -99,8 +100,9 @@ public class ResponseFactory {
       throw new UnauthorizedException();
     }
     
-    System.out.println( credentials );
-    System.out.println( authInfo );
+    if( !access.isValid( authInfo ) ) {
+      throw new ForbiddenException();
+    }
     
   }
 }
