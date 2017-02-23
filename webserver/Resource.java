@@ -22,7 +22,7 @@ public class Resource {
   public Resource( String uri, HttpdConf conf, MimeTypes mime ) {
     this.uri = uri;
     this.conf = conf;
-    this.mime = mime;
+    this.mimes = mime;
     isAlias = false;
     isScript = false;
     isProtected = false;
@@ -131,7 +131,7 @@ public class Resource {
     String[] pathTokens;
     String extensions;
     
-    pathTokens = absolutePath.sptit("\\.");
+    pathTokens = absolutePath.split("\\.");
     extensions = pathTokens[ pathTokens.length - 1 ];
     
     return mimes.lookup( extensions );
