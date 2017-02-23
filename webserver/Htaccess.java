@@ -68,7 +68,6 @@ public class Htaccess extends ConfigurationReader {
         if( user ) {
           while( tokens.hasMoreTokens() ) {
             String temp = tokens.nextToken();
-            System.out.println("HTACCESS: " +temp);
             users.put( temp, true );
           }
         }
