@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 public class Htaccess extends ConfigurationReader {
   private HashMap<String,String> directives;
-  private LinkedList<String> users;
+  private HashMap<String,Boolean> users;
   private Htpassword userFile;
   private boolean validUser; // allow all valid users
   private boolean user; // allow listed users 
@@ -15,7 +15,7 @@ public class Htaccess extends ConfigurationReader {
       throws FileNotFoundException, IOException {
     super( fileName );
     directives = new HashMap<String,String>();
-    users = new LinkedList<String>();
+    users = new HashMap<String,Boolean>();
     load();
   }
 
@@ -67,7 +67,9 @@ public class Htaccess extends ConfigurationReader {
         
         if( user ) {
           while( tokens.hasMoreTokens() ) {
-            users.add( tokens.nextToken() );
+            String temp = tokens.nextToken();
+            System.out.println("HTACCESS: " +temp);
+            users.put( temp, true );
           }
         }
         break;
@@ -76,6 +78,19 @@ public class Htaccess extends ConfigurationReader {
 
   public boolean isAuthorized( String  authInfo) {
     return userFile.isAuthorized( authInfo );
+  }
+  
+  public boolean isValid( String authInfo ) {
+    String userName = Htpassword.decode( authInfo ).split(":")[0];
+    boolean valid = isAuthorized( authInfo );
+    boolean inUsers = ( users.get( userName ) != null );
+    
+    if( this.user ) {
+      valid = isAuthorized( authInfo ) && inUsers;
+    } 
+   
+    
+    return valid ;
   }
 
   public String getAuthUserFilePath() {
