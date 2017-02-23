@@ -32,7 +32,7 @@ public class ResponseFactory {
     String requestMethod; 
     FormattedDate modifiedDate;
     
-    filePath = Paths.get( resource.getAbsolutePath() );
+    filePath = Paths.get( resource.absolutePath() );
     requestMethod = request.getVerb();
     
     if( !Files.exists( filePath )) {
