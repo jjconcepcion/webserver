@@ -142,8 +142,8 @@ public class Resource {
       accessFilePath += conf.getAccessFileName();
     }
   }
-  
-  public String getAccessFilePath() {
+
+  public String accessFilePath() {
     return accessFilePath;
   }
 }
