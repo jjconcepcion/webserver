@@ -16,6 +16,7 @@ public class ResponseFactory {
     if( exception instanceof BadRequestException ) {
       response = new BadRequestResponse( resource );
     } else if( exception instanceof UnauthorizedException) {
+      response = new UnauthorizedResponse( resource );
     } else if( exception instanceof ForbiddenException ) {
     } else if( exception instanceof NotFoundException ) {
       response = new NotFoundResponse( resource );
@@ -34,6 +35,13 @@ public class ResponseFactory {
     
     filePath = Paths.get( resource.absolutePath() );
     requestMethod = request.getVerb();
+    
+    try {
+      checkValidAccessFor( request, resource );
+      
+    } catch( ServerException exception ) {
+      return getResponse( request, resource, exception );
+    }
     
     if( !Files.exists( filePath )) {
       throw new NotFoundException();
@@ -75,4 +83,16 @@ public class ResponseFactory {
     return response;
   }
   
+  public static void checkValidAccessFor( Request request, Resource resource )
+      throws ServerException, IOException {
+    String credentials = request.lookupHeader( "Authorization" );
+    
+    System.out.println( credentials );
+    
+    System.out.println("checkValidAccessFor():");
+    if( credentials == null ) {
+      throw new UnauthorizedException();
+    }
+    
+  }
 }
