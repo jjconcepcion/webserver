@@ -64,16 +64,25 @@ public class ResponseFactory {
       throw new NotFoundException();
     }
 
-    if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ) {
+    if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ||
+        requestMethod.equals( "POST" ) ) {
+        
+      if( requestMethod.equals( "POST") ) {
+        writeToFile( filePath.toString(), request.getBody() );
+      }
+        
       modifiedDate = new FormattedDate(
         Files.getLastModifiedTime( filePath ).toMillis()
       ); 
       
       if( request.isConditional() &&
         request.modifiedDate().equals( modifiedDate.toString() )) {
+        
         response = new NotModifiedResponse( resource );
+        
       } else {
         response = new OKResponse( resource );
+        
         response.setRequestMethod(requestMethod );
       }
       
@@ -90,6 +99,7 @@ public class ResponseFactory {
       writeToFile( filePath.toString(), request.getBody() );
       
       response = new CreatedResponse( resource );
+      
       response.setHeaderLine( "Location", request.getUri() );
     } else if ( requestMethod.equals("DELETE") ) {
       Files.delete( filePath );
