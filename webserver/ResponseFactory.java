@@ -38,13 +38,26 @@ public class ResponseFactory {
     requestMethod = request.getVerb();
     
     if( resource.isProtected() ) {
+      Htaccess access = new Htaccess( resource.accessFilePath() );
+      
       try {
         // throws UnauthorizedException or ForbiddenException
         checkValidAccessFor( request, resource );
         
       } catch( ServerException exception ) {
-        return getResponse( request, resource, exception );
+        response = getResponse( request, resource, exception );
+      
+        if( exception instanceof UnauthorizedException ) {
+          String field = "WWW-Authenticate";
+          String value = access.getAuthType() + " realm=\"" +
+                          access.getAuthName() +"\"";
+                          
+          response.setHeaderLine( field, value );
+        }
+       
+        return response;
       }
+        
     }
    
     if( !Files.exists( filePath )) {
