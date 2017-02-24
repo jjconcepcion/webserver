@@ -1,6 +1,8 @@
 import java.util.HashMap;
 import java.util.StringTokenizer;
+import java.util.Arrays;
 import java.io.*;
+import ServerExceptions.*;
 
 public class Request {
   private HashMap<String,String> headers;
@@ -9,13 +11,16 @@ public class Request {
   private String httpVersion;
   private InputStream inputStream;
   private byte[] body;
+  private static String[] validVerbs = {
+    "GET", "HEAD", "POST", "PUT", "DELETE"
+  };
   
   public Request( InputStream clientInputStream ) {
     headers = new HashMap<String,String>();
     inputStream = clientInputStream;
   }
 
-  public void parse() throws IOException {
+  public void parse() throws IOException, BadRequestException {
     String line;
     
     BufferedReader reader = new BufferedReader(
@@ -40,20 +45,34 @@ public class Request {
     }
   }
   
-  private void parseStartLine( String line ) {
-    StringTokenizer tokens = new StringTokenizer( line );
+  private void parseStartLine( String line ) throws BadRequestException {
+    String whitespaces = "\\s+";
+    String[] tokens = line.split(whitespaces);
     
-    verb = tokens.nextToken();
-    uri = tokens.nextToken();
-    httpVersion = tokens.nextToken();
+    if( tokens.length != 3 ) {
+      throw new BadRequestException();
+    }
+    
+    verb = tokens[0];
+    if( !isValidVerb( verb ) ) {
+      throw new BadRequestException();
+    }
+    
+    uri = tokens[1];
+    httpVersion = tokens[2];
   }
   
-  private void parseHeader( String line ) {
-    StringTokenizer tokens = new StringTokenizer( line );
+  private void parseHeader( String line ) throws BadRequestException {
+    String[] tokens = line.split( ":", 2 );
     String header, value;
     
-    header = tokens.nextToken().replace( ":", "");
-    value = tokens.nextToken();
+    if( tokens.length < 2 ) {
+      throw new BadRequestException();
+    }
+    
+    header = tokens[0];
+    value = tokens[1];
+    value = value.trim();
     
     headers.put( header, value );
   }
@@ -63,6 +82,10 @@ public class Request {
     body = new byte[byteSize];
     
     inputStream.read( body, 0, byteSize );
+  }
+  
+  private boolean isValidVerb( String verb ) {
+    return Arrays.asList( validVerbs ).contains( verb );
   }
   
   public String getUri() {
@@ -81,11 +104,19 @@ public class Request {
     return headers.get( header );
   }
   
-  public Boolean hasBody() {
+  public boolean hasBody() {
     return lookupHeader( "Content-Length" ) != null;
   }
   
   public byte[] getBody() {
     return body;
+  }
+  
+  public boolean isConditional() {
+    return headers.get( "If-Modified-Since" ) != null;
+  }
+  
+  public String modifiedDate() {
+    return headers.get( "If-Modified-Since" );
   }
 }
