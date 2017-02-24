@@ -37,10 +37,5 @@ public class OKResponse extends Response {
       outputStream.write( body );
       outputStream.flush();
     }
-  
-    //if HEAD work is done
-    
-    //if POST ?
   }
-  
 }
