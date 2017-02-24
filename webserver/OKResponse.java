@@ -15,19 +15,25 @@ public class OKResponse extends Response {
       new OutputStreamWriter( outputStream )
     );
     
-    this.setBodyDataFrom( this.resource.absolutePath() );
-    
     this.sendCommonPreamble( out );
     this.sendSetHeaders( out );
-    this.sendHeaderLine( out, "Content-Type", this.resource.getMimeType() );
-    this.sendHeaderLine(
-      out, "Content-Length", String.valueOf( this.body.length ) 
-    );
+    
+    // Determine source of response body
+    if( resource.isScript() ) {
+      body = "REDIRECTED SCRIPT OUTPUT".getBytes();
+    } else {
+      this.setBodyDataFrom( this.resource.absolutePath() );
+      this.sendHeaderLine( out, "Content-Type", this.resource.getMimeType() );
+      this.sendHeaderLine( 
+        out, "Content-Length", String.valueOf( this.body.length ) 
+      );
    
+    }
+    
     out.write(this.CRLF);
     out.flush();
     
-    if( this.requestVerb.equals("GET") ) {
+    if( !this.requestVerb.equals("HEAD") ) {
       outputStream.write( body );
       outputStream.flush();
     }
