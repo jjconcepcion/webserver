@@ -59,17 +59,16 @@ public class ResponseFactory {
       }
         
     }
-   
-    if( !Files.exists( filePath )) {
+
+    if( !requestMethod.equals("PUT") && !Files.exists( filePath ) ) {
       throw new NotFoundException();
     }
 
-    modifiedDate = new FormattedDate(
-      Files.getLastModifiedTime( filePath ).toMillis()
-    );
-    
     if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ) {
-    
+      modifiedDate = new FormattedDate(
+        Files.getLastModifiedTime( filePath ).toMillis()
+      ); 
+      
       if( request.isConditional() &&
         request.modifiedDate().equals( modifiedDate.toString() )) {
         response = new NotModifiedResponse( resource );
@@ -79,25 +78,29 @@ public class ResponseFactory {
       }
       
       response.setHeaderLine( "Last-Modified", modifiedDate.toString() );
-      response.setHeaderLine( "Cache-Control: ", "max-age=3600" );
+      response.setHeaderLine( "Cache-Control", "max-age=3600" );
       
       FormattedDate expiration = new FormattedDate(
         LocalDateTime.now().plusSeconds(3600)
       );
       
-      response.setHeaderLine( "Expires: ", expiration.toString() );
+      response.setHeaderLine( "Expires", expiration.toString() );
       
     } else if( requestMethod.equals( "PUT" ) ) {
+      writeToFile( request, filePath.toString() );
       
-      File putFile = new File( filePath.toString() );
-      FileOutputStream fileOut = new FileOutputStream( putFile, false );
-  
-      fileOut.write( request.getBody() );
-      fileOut.close();
-      
+      response = new CreatedResponse(resource);
+      response.setHeaderLine( "Location", request.getUri() );
     }
     
     return response;
+  }
+  
+  public static void writeToFile( Request request, String filePath ) {
+    
+    System.out.println("Write: " + filePath);
+    //FileOutputStream out = new FileOutputStream();
+  
   }
   
   public static void checkValidAccessFor( Request request, Resource resource )
