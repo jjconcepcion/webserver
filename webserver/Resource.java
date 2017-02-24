@@ -9,11 +9,9 @@ import java.util.Iterator;
 public class Resource {
   private HttpdConf conf;
   private String uri;
-  private String directoryPath;
   private String directoryIndex;
   private String absolutePath;
   private String accessFilePath;
-  private File file;
   private MimeTypes mimes;
   private ListIterator<String> indexes;
   private boolean isScript;
