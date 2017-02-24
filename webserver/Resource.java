@@ -14,14 +14,12 @@ public class Resource {
   private MimeTypes mimes;
   private ListIterator<String> indexes;
   private boolean isScript;
-  private boolean isAlias;
   private boolean isProtected;
 
   public Resource( String uri, HttpdConf conf, MimeTypes mime ) {
     this.uri = uri;
     this.conf = conf;
     this.mimes = mime;
-    isAlias = false;
     isScript = false;
     isProtected = false;
     indexes = conf.getDirectoryIndexes();
