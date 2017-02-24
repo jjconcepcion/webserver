@@ -37,13 +37,29 @@ public class ResponseFactory {
     filePath = Paths.get( resource.absolutePath() );
     requestMethod = request.getVerb();
     
-    try {
-      checkValidAccessFor( request, resource );
+    if( resource.isProtected() ) {
+      Htaccess access = new Htaccess( resource.accessFilePath() );
       
-    } catch( ServerException exception ) {
-      return getResponse( request, resource, exception );
+      try {
+        // throws UnauthorizedException or ForbiddenException
+        checkValidAccessFor( request, resource );
+        
+      } catch( ServerException exception ) {
+        response = getResponse( request, resource, exception );
+      
+        if( exception instanceof UnauthorizedException ) {
+          String field = "WWW-Authenticate";
+          String value = access.getAuthType() + " realm=\"" +
+                          access.getAuthName() +"\"";
+                          
+          response.setHeaderLine( field, value );
+        }
+       
+        return response;
+      }
+        
     }
-    
+   
     if( !Files.exists( filePath )) {
       throw new NotFoundException();
     }
@@ -55,7 +71,7 @@ public class ResponseFactory {
     if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ) {
     
       if( request.isConditional() &&
-          request.modifiedDate().equals( modifiedDate.toString() )) {
+        request.modifiedDate().equals( modifiedDate.toString() )) {
         response = new NotModifiedResponse( resource );
       } else {
         response = new OKResponse( resource );
@@ -86,7 +102,7 @@ public class ResponseFactory {
   
   public static void checkValidAccessFor( Request request, Resource resource )
       throws ServerException, IOException {
-    Htaccess access = new Htaccess("/home/foxtrot/class/Spring2017/CSC667/server/public_html/.htaccess");
+    Htaccess access = new Htaccess( resource.accessFilePath() );
       
     String credentials = request.lookupHeader( "Authorization" );
     

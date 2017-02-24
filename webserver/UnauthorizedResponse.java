@@ -20,7 +20,6 @@ public class UnauthorizedResponse extends Response {
     
     this.sendCommonPreamble( out );
     this.sendSetHeaders( out );
-    this.sendHeaderLine( out, "WWW-Authenticate", "Basic realm=\"My Server\"" );
     this.sendHeaderLine( out, "Content-Type", "text/html" );
     this.sendHeaderLine( out, "Content-Length", 
       String.valueOf( body.length() ) 
