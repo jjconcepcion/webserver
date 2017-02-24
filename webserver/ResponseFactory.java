@@ -37,11 +37,11 @@ public class ResponseFactory {
     filePath = Paths.get( resource.absolutePath() );
     requestMethod = request.getVerb();
     
+    
     if( resource.isProtected() ) {
       Htaccess access = new Htaccess( resource.accessFilePath() );
       
       try {
-        // throws UnauthorizedException or ForbiddenException
         checkValidAccessFor( request, resource );
         
       } catch( ServerException exception ) {
@@ -57,47 +57,65 @@ public class ResponseFactory {
        
         return response;
       }
-        
     }
-   
-    if( !Files.exists( filePath )) {
+    
+
+    if( !requestMethod.equals("PUT") && !Files.exists( filePath ) ) {
       throw new NotFoundException();
     }
 
-    modifiedDate = new FormattedDate(
-      Files.getLastModifiedTime( filePath ).toMillis()
-    );
-    
-    if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ) {
-    
+    if( requestMethod.equals( "GET" ) || requestMethod.equals( "HEAD" ) ||
+        requestMethod.equals( "POST" ) ) {
+        
+      if( requestMethod.equals( "POST") ) {
+        writeToFile( filePath.toString(), request.getBody() );
+      }
+        
+      modifiedDate = new FormattedDate(
+        Files.getLastModifiedTime( filePath ).toMillis()
+      ); 
+      
       if( request.isConditional() &&
         request.modifiedDate().equals( modifiedDate.toString() )) {
+        
         response = new NotModifiedResponse( resource );
+        
       } else {
         response = new OKResponse( resource );
+        
         response.setRequestMethod(requestMethod );
       }
       
       response.setHeaderLine( "Last-Modified", modifiedDate.toString() );
-      response.setHeaderLine( "Cache-Control: ", "max-age=3600" );
+      response.setHeaderLine( "Cache-Control", "max-age=3600" );
       
       FormattedDate expiration = new FormattedDate(
         LocalDateTime.now().plusSeconds(3600)
       );
       
-      response.setHeaderLine( "Expires: ", expiration.toString() );
+      response.setHeaderLine( "Expires", expiration.toString() );
       
     } else if( requestMethod.equals( "PUT" ) ) {
+      writeToFile( filePath.toString(), request.getBody() );
       
-      File putFile = new File( filePath.toString() );
-      FileOutputStream fileOut = new FileOutputStream( putFile, false );
-  
-      fileOut.write( request.getBody() );
-      fileOut.close();
+      response = new CreatedResponse( resource );
       
+      response.setHeaderLine( "Location", request.getUri() );
+    } else if ( requestMethod.equals("DELETE") ) {
+      Files.delete( filePath );
+      
+      response = new NoContentResponse( resource );
     }
     
     return response;
+  }
+  
+  public static void writeToFile( String fileName, byte[] data ) 
+      throws IOException {
+    FileOutputStream out = new FileOutputStream( fileName, false );
+    
+    out.write( data );
+    out.close();
   }
   
   public static void checkValidAccessFor( Request request, Resource resource )
