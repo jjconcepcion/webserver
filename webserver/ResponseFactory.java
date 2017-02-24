@@ -37,11 +37,11 @@ public class ResponseFactory {
     filePath = Paths.get( resource.absolutePath() );
     requestMethod = request.getVerb();
     
+    
     if( resource.isProtected() ) {
       Htaccess access = new Htaccess( resource.accessFilePath() );
       
       try {
-        // throws UnauthorizedException or ForbiddenException
         checkValidAccessFor( request, resource );
         
       } catch( ServerException exception ) {
@@ -57,8 +57,8 @@ public class ResponseFactory {
        
         return response;
       }
-        
     }
+    
 
     if( !requestMethod.equals("PUT") && !Files.exists( filePath ) ) {
       throw new NotFoundException();
@@ -87,20 +87,25 @@ public class ResponseFactory {
       response.setHeaderLine( "Expires", expiration.toString() );
       
     } else if( requestMethod.equals( "PUT" ) ) {
-      writeToFile( request, filePath.toString() );
+      writeToFile( filePath.toString(), request.getBody() );
       
-      response = new CreatedResponse(resource);
+      response = new CreatedResponse( resource );
       response.setHeaderLine( "Location", request.getUri() );
+    } else if ( requestMethod.equals("DELETE") ) {
+      Files.delete( filePath );
+      
+      response = new NoContentResponse( resource );
     }
     
     return response;
   }
   
-  public static void writeToFile( Request request, String filePath ) {
+  public static void writeToFile( String fileName, byte[] data ) 
+      throws IOException {
+    FileOutputStream out = new FileOutputStream( fileName, false );
     
-    System.out.println("Write: " + filePath);
-    //FileOutputStream out = new FileOutputStream();
-  
+    out.write( data );
+    out.close();
   }
   
   public static void checkValidAccessFor( Request request, Resource resource )
