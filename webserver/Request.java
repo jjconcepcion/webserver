@@ -46,6 +46,10 @@ public class Request {
   }
   
   private void parseStartLine( String line ) throws BadRequestException {
+    if( line == null ) {
+      throw new BadRequestException();
+    }
+    
     String whitespaces = "\\s+";
     String[] tokens = line.split(whitespaces);
     
