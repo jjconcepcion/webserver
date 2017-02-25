@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 public class MimeTypes extends ConfigurationReader {
   private HashMap<String, String> types;
 
-  public MimeTypes(String fileName) throws FileNotFoundException {
+  public MimeTypes( String fileName ) throws FileNotFoundException {
     super( fileName );
     types = new HashMap<String, String>();
   }
@@ -16,10 +16,12 @@ public class MimeTypes extends ConfigurationReader {
 
     while( hasMoreLines() ) {
       line = nextLine();
+      
       if ( line.startsWith( "#" ) || line.isEmpty() ) {
         continue;
       }
-      parse(line);
+      
+      parse( line );
     }
   }
 
@@ -35,7 +37,7 @@ public class MimeTypes extends ConfigurationReader {
     }
   }
 
-  public String lookup(String extension ) {
+  public String lookup( String extension ) {
     return types.get( extension );
   }
 }
