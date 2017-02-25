@@ -26,7 +26,7 @@ public class ResponseFactory {
       response = new NotFoundResponse( resource );
       
     } else if( exception instanceof InternalServerErrorException ) {
-      response = new InternalServerErrorResponse( resource )
+      response = new InternalServerErrorResponse( resource );
       
     } 
     
