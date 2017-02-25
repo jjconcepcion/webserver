@@ -52,7 +52,7 @@ public class Request {
     }
     
     String whitespaces = "\\s+";
-    String[] tokens = line.split(whitespaces);
+    String[] tokens = line.split( whitespaces );
     
     if( tokens.length != 3 ) {
       throw new BadRequestException();
@@ -66,8 +66,8 @@ public class Request {
     uri = tokens[1];
     httpVersion = tokens[2];
 
-    if( uri.contains("?") ) {
-      extractQueryString(uri);
+    if( uri.contains( "?" ) ) {
+      extractQueryString( uri );
     } 
   }
   
@@ -87,7 +87,7 @@ public class Request {
   }
   
   private void parseBody() throws IOException {
-    int byteSize = Integer.parseInt( lookupHeader( "Content-Length") );
+    int byteSize = Integer.parseInt( lookupHeader( "Content-Length" ) );
     body = new byte[byteSize];
     
     inputStream.read( body, 0, byteSize );
@@ -99,7 +99,7 @@ public class Request {
 
   private void extractQueryString( String uri ) {
     String questionmark = "\\?";
-    String[] tokens = uri.split(questionmark);
+    String[] tokens = uri.split( questionmark );
     this.uri = tokens[0];
     queryString = tokens[1];
   }
