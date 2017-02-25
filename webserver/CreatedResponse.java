@@ -22,5 +22,4 @@ public class CreatedResponse extends Response {
     out.write(this.CRLF);
     out.flush();
   }
-  
 }
