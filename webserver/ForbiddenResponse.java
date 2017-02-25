@@ -31,5 +31,4 @@ public class ForbiddenResponse extends Response {
     out.write( body );
     out.flush();
   }
-  
 }

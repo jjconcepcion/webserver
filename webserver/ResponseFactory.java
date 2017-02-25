@@ -15,13 +15,19 @@ public class ResponseFactory {
     
     if( exception instanceof BadRequestException ) {
       response = new BadRequestResponse( resource );
+      
     } else if( exception instanceof UnauthorizedException) {
       response = new UnauthorizedResponse( resource );
+      
     } else if( exception instanceof ForbiddenException ) {
       response = new ForbiddenResponse( resource );
+      
     } else if( exception instanceof NotFoundException ) {
       response = new NotFoundResponse( resource );
+      
     } else if( exception instanceof InternalServerErrorException ) {
+      response = new InternalServerErrorResponse( resource );
+      
     } 
     
     return response;
@@ -68,7 +74,7 @@ public class ResponseFactory {
         requestMethod.equals( "POST" ) ) {
         
       if( requestMethod.equals( "POST") ) {
-        writeToFile( filePath.toString(), request.getBody() );
+        Files.write( filePath, request.getBody() );
       }
         
       modifiedDate = new FormattedDate(
@@ -96,7 +102,7 @@ public class ResponseFactory {
       response.setHeaderLine( "Expires", expiration.toString() );
       
     } else if( requestMethod.equals( "PUT" ) ) {
-      writeToFile( filePath.toString(), request.getBody() );
+      Files.write( filePath, request.getBody() );
       
       response = new CreatedResponse( resource );
       
@@ -108,14 +114,6 @@ public class ResponseFactory {
     }
     
     return response;
-  }
-  
-  public static void writeToFile( String fileName, byte[] data ) 
-      throws IOException {
-    FileOutputStream out = new FileOutputStream( fileName, false );
-    
-    out.write( data );
-    out.close();
   }
   
   public static void checkValidAccessFor( Request request, Resource resource )
