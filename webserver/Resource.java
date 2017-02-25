@@ -32,7 +32,7 @@ public class Resource {
   }
 
  // Initialize absolutePath and sets isScript to true if script-aliased
-  public void resolveAbsolutePath() {
+  private void resolveAbsolutePath() {
     absolutePath = "";
     
     if( uri.equals( "/" ) ) {
