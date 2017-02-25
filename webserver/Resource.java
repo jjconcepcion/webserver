@@ -33,7 +33,6 @@ public class Resource {
     return absolutePath;
   }
 
- // Initialize absolutePath and sets isScript to true if script-aliased
   private void resolveAbsolutePath() {
     absolutePath = "";
     
@@ -42,10 +41,11 @@ public class Resource {
     } else {
       StringTokenizer tokens = new StringTokenizer( uri, "/" );
       String temporaryPath = "/";
-      boolean isDirectory = this.uri.endsWith("/");
+      boolean isDirectory = this.uri.endsWith( "/" );
       
       while( tokens.hasMoreTokens() ) {
         temporaryPath += tokens.nextToken();
+        
         if( tokens.hasMoreTokens() || isDirectory ) {
           temporaryPath += "/" ;
         }
@@ -59,8 +59,8 @@ public class Resource {
         if( isScriptAlias( temporaryPath ) ) {
           absolutePath = conf.lookupScriptAlias( temporaryPath ) +
             remainingPath( tokens, isDirectory );
-            this.isScript = true;
-            break;
+          this.isScript = true;
+          break;
         }
       }
       
@@ -68,8 +68,7 @@ public class Resource {
         absolutePath = conf.getDocumentRoot() + uri.replaceFirst( "/", "" );
       }
     }
-    
-    if( absolutePath.endsWith("/") ) {
+    if( absolutePath.endsWith( "/" ) ) {
       isFile = false;
     } else {
       isFile = true;
@@ -87,6 +86,7 @@ public class Resource {
         remainder += "/";
       }
     }
+    
     return remainder;
   }
   
@@ -96,14 +96,15 @@ public class Resource {
     while( directoryIndex.equals("") && indexes.hasNext() ) {
       directoryIndex = indexes.next();
     }
+    
     absolutePath += directoryIndex;
   }
   
-  private boolean isAlias(String path) {
+  private boolean isAlias( String path ) {
     return conf.lookupAlias( path ) != null ;
   }
   
-  private boolean isScriptAlias(String path) {
+  private boolean isScriptAlias( String path ) {
     return conf.lookupScriptAlias( path ) != null ;
   }
   
@@ -119,7 +120,7 @@ public class Resource {
     String[] pathTokens;
     String extensions;
     
-    pathTokens = absolutePath.split("\\.");
+    pathTokens = absolutePath.split( "\\." );
     extensions = pathTokens[ pathTokens.length - 1 ];
     
     return mimes.lookup( extensions );
