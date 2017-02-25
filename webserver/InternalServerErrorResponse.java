@@ -23,13 +23,12 @@ public class InternalServerErrorResponse extends Response {
     this.sendHeaderLine( out, "Content-Length", 
       String.valueOf( body.length() ) 
     );
-    this.sendHeaderLine( out, "Connection", "closed");
+    this.sendHeaderLine( out, "Connection", "closed" );
    
-    out.write(this.CRLF);
+    out.write( this.CRLF );
     out.flush();
     
     out.write( body );
     out.flush();
   }
-  
 }
