@@ -56,7 +56,7 @@ public class ResponseFactory {
         if( exception instanceof UnauthorizedException ) {
           String field = "WWW-Authenticate";
           String value = access.getAuthType() + " realm=\"" +
-                          access.getAuthName() +"\"";
+                          access.getAuthName() + "\"";
                           
           response.setHeaderLine( field, value );
         }
@@ -66,7 +66,7 @@ public class ResponseFactory {
     }
     
 
-    if( !requestMethod.equals("PUT") && !Files.exists( filePath ) ) {
+    if( !requestMethod.equals( "PUT" ) && !Files.exists( filePath ) ) {
       throw new NotFoundException();
     }
 
@@ -89,14 +89,14 @@ public class ResponseFactory {
       } else {
         response = new OKResponse( resource );
         
-        response.setRequestMethod(requestMethod );
+        response.setRequestMethod( requestMethod );
       }
       
       response.setHeaderLine( "Last-Modified", modifiedDate.toString() );
       response.setHeaderLine( "Cache-Control", "max-age=3600" );
       
       FormattedDate expiration = new FormattedDate(
-        LocalDateTime.now().plusSeconds(3600)
+        LocalDateTime.now().plusSeconds( 3600 )
       );
       
       response.setHeaderLine( "Expires", expiration.toString() );
@@ -126,7 +126,7 @@ public class ResponseFactory {
       throw new UnauthorizedException();
     }
     
-    String authInfo = credentials.split("\\s")[1];
+    String authInfo = credentials.split( "\\s" )[1];
     
     if( !access.isAuthorized( authInfo ) ) {
       throw new UnauthorizedException();
@@ -134,7 +134,6 @@ public class ResponseFactory {
     
     if( !access.isValid( authInfo ) ) {
       throw new ForbiddenException();
-    }
-    
+    }   
   }
 }
