@@ -9,6 +9,7 @@ public class Request {
   private String uri;
   private String verb;
   private String httpVersion;
+  private String queryString;
   private InputStream inputStream;
   private byte[] body;
   private static String[] validVerbs = {
@@ -61,9 +62,13 @@ public class Request {
     if( !isValidVerb( verb ) ) {
       throw new BadRequestException();
     }
-    
+
     uri = tokens[1];
     httpVersion = tokens[2];
+
+    if( uri.contains("?") ) {
+      extractQueryString(uri);
+    } 
   }
   
   private void parseHeader( String line ) throws BadRequestException {
@@ -90,6 +95,17 @@ public class Request {
   
   private boolean isValidVerb( String verb ) {
     return Arrays.asList( validVerbs ).contains( verb );
+  }
+
+  private void extractQueryString( String uri ) {
+    String questionmark = "\\?";
+    String[] tokens = uri.split(questionmark);
+    this.uri = tokens[0];
+    queryString = tokens[1];
+  }
+
+  public String getQueryString() {
+    return queryString;
   }
   
   public String getUri() {

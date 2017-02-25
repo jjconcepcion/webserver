@@ -13,6 +13,7 @@ public class Resource {
   private String accessFilePath;
   private MimeTypes mimes;
   private ListIterator<String> indexes;
+  private boolean isFile;
   private boolean isScript;
   private boolean isProtected;
 
@@ -22,6 +23,7 @@ public class Resource {
     this.mimes = mime;
     isScript = false;
     isProtected = false;
+    isFile = false;
     indexes = conf.getDirectoryIndexes();
     this.resolveAbsolutePath();
     this.resolveAccessFilePath();
@@ -68,7 +70,9 @@ public class Resource {
     }
     
     if( absolutePath.endsWith("/") ) {
-      addDirectoryIndexToAbsolutePath();
+      isFile = false;
+    } else {
+      isFile = true;
     }
   }
   
@@ -88,9 +92,8 @@ public class Resource {
   
   private void addDirectoryIndexToAbsolutePath() {
     directoryIndex = "";
-    Path tempPath;
     
-    while( directoryIndex.equals("") || indexes.hasNext() ) {
+    while( directoryIndex.equals("") && indexes.hasNext() ) {
       directoryIndex = indexes.next();
     }
     absolutePath += directoryIndex;
@@ -140,5 +143,22 @@ public class Resource {
 
   public String accessFilePath() {
     return accessFilePath;
+  }
+
+  public boolean hasMoreIndex() {
+    return indexes.hasNext();
+  }
+
+  public String getIndex() {
+    directoryIndex = indexes.next();
+    return directoryIndex;
+  }
+
+  public boolean isFile() {
+    return isFile;
+  }
+
+  public ListIterator<String> getIndexes() {
+    return conf.getDirectoryIndexes();
   }
 }
