@@ -24,11 +24,10 @@ public class NotFoundResponse extends Response {
       String.valueOf( body.length() ) 
     );
    
-    out.write(this.CRLF);
+    out.write( this.CRLF );
     out.flush();
     
     out.write( body );
     out.flush();
   }
-  
 }
