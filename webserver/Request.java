@@ -102,7 +102,6 @@ public class Request {
     String[] tokens = uri.split(questionmark);
     this.uri = tokens[0];
     queryString = tokens[1];
-
   }
 
   public String getQueryString() {
