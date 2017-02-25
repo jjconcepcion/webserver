@@ -24,11 +24,9 @@ public class Server {
     Thread worker = null;
 
     while( true ) {
-      System.out.println("SERVER:start()");
       client = socket.accept();
       worker = new Worker( client, configuration, mimeTypes );
       worker.start();
-      //client.close();
     }
   }
 }
