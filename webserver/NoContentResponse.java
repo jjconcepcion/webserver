@@ -16,8 +16,7 @@ public class NoContentResponse extends Response {
     );
     
     this.sendCommonPreamble( out );
-    out.write(this.CRLF);
+    out.write( this.CRLF );
     out.flush();
   }
-  
 }
