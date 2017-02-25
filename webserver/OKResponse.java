@@ -18,7 +18,6 @@ public class OKResponse extends Response {
     this.sendCommonPreamble( out );
     this.sendSetHeaders( out );
     
-    // Determine source of response body
     if( resource.isScript() ) {
       body = "REDIRECTED SCRIPT OUTPUT".getBytes();
     } else {
@@ -30,10 +29,10 @@ public class OKResponse extends Response {
    
     }
     
-    out.write(this.CRLF);
+    out.write( this.CRLF );
     out.flush();
     
-    if( !this.requestVerb.equals("HEAD") ) {
+    if( !this.requestVerb.equals( "HEAD" ) ) {
       outputStream.write( body );
       outputStream.flush();
     }
