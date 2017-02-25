@@ -18,8 +18,7 @@ public class NotModifiedResponse extends Response {
     this.sendCommonPreamble( out );
     this.sendSetHeaders( out );
    
-    out.write(this.CRLF);
+    out.write( this.CRLF );
     out.flush();
   }
-  
 }
