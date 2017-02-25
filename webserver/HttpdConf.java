@@ -42,34 +42,34 @@ public class HttpdConf extends ConfigurationReader {
     switch( directive ) {
       case "Alias": 
         urlPath = tokens.nextToken();
-        directoryPath = tokens.nextToken().replace("\"","");
+        directoryPath = tokens.nextToken().replace( "\"", "" );
         aliases.put( urlPath, directoryPath );
         break;
       case "ScriptAlias": 
         urlPath = tokens.nextToken();
-        directoryPath = tokens.nextToken().replace("\"","");
+        directoryPath = tokens.nextToken().replace( "\"", "" );
         scriptAliases.put( urlPath, directoryPath );
         break;
       case "DirectoryIndex":
         while( tokens.hasMoreTokens() ) {
-          urlPath = tokens.nextToken().replace("\n","");
+          urlPath = tokens.nextToken().replace( "\n", "" );
           directoryIndex.add( urlPath );
         }
         break;
       case "ServerRoot":
-        serverRoot = tokens.nextToken().replace("\"","");
+        serverRoot = tokens.nextToken().replace( "\"", "" );
         break;
       case "DocumentRoot": 
-        documentRoot = tokens.nextToken().replace("\"","");
+        documentRoot = tokens.nextToken().replace( "\"", "" );
         break;
       case "Listen":
         listen = Integer.parseInt( tokens.nextToken() );
         break;
       case "LogFile":
-        logFile = tokens.nextToken().replace("\"","");
+        logFile = tokens.nextToken().replace( "\"", "" );
         break;
       case "AccessFileName":
-        accessFileName = tokens.nextToken().replace("\"","");
+        accessFileName = tokens.nextToken().replace( "\"", "" );
         break;
     }
   }
