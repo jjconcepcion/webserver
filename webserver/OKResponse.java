@@ -26,7 +26,6 @@ public class OKResponse extends Response {
       this.sendHeaderLine( 
         out, "Content-Length", String.valueOf( this.body.length ) 
       );
-   
     }
     
     out.write( this.CRLF );
