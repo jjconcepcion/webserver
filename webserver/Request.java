@@ -69,7 +69,6 @@ public class Request {
     if( uri.contains("?") ) {
       extractQueryString(uri);
     } 
-    // uri = tokens[1];
   }
   
   private void parseHeader( String line ) throws BadRequestException {
