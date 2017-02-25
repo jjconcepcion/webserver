@@ -128,14 +128,18 @@ public class Resource {
   private void resolveAccessFilePath() {
     accessFilePath = absolutePath;
     Path tempPath;
+    
     while( isProtected == false ) {
       tempPath = Paths.get( accessFilePath );
-      isProtected = tempPath.resolve( conf.getAccessFileName() ).toFile().exists();
+      isProtected = tempPath.resolve( 
+        conf.getAccessFileName() ).toFile().exists();
+
       if( accessFilePath.equals( conf.getDocumentRoot() ) ) {
         break;
       }
       accessFilePath = tempPath.getParent() + "/";
     }
+
     if ( isProtected == true ) {
       accessFilePath += conf.getAccessFileName();
     }
