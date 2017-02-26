@@ -40,6 +40,12 @@ public class MimeTypes extends ConfigurationReader {
   }
 
   public String lookup( String extension ) {
-    return types.get( extension );
+    String mimeType = types.get( extension );
+    
+    if( mimeType == null ) {
+      mimeType = "text/text";
+    }
+    
+    return mimeType;
   }
 }
