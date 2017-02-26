@@ -64,9 +64,8 @@ public class ResponseFactory {
         return response;
       }
     }
-    
 
-    if( !requestMethod.equals( "PUT" ) && !Files.exists( filePath ) ) {
+    if( !requestMethod.equals( "PUT" ) && !resource.exists() ) {
       throw new NotFoundException();
     }
 

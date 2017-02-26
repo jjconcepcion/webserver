@@ -3,6 +3,7 @@ import java.util.StringTokenizer;
 import java.util.ListIterator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.util.Iterator;
 
 public class Resource {
@@ -16,6 +17,7 @@ public class Resource {
   private boolean isFile;
   private boolean isScript;
   private boolean isProtected;
+  private boolean exists;
 
   public Resource( String uri, HttpdConf conf, MimeTypes mime ) {
     this.uri = uri;
@@ -23,9 +25,9 @@ public class Resource {
     this.mimes = mime;
     isScript = false;
     isProtected = false;
-    isFile = false;
     indexes = conf.getDirectoryIndexes();
     this.resolveAbsolutePath();
+    this.exists = Files.exists( Paths.get( absolutePath ));
     this.resolveAccessFilePath();
   }
 
@@ -68,11 +70,11 @@ public class Resource {
         absolutePath = conf.getDocumentRoot() + uri.replaceFirst( "/", "" );
       }
     }
+    
     if( absolutePath.endsWith( "/" ) ) {
-      isFile = false;
-    } else {
-      isFile = true;
+      tryAppendDirectoryIndex();
     }
+       
   }
   
   private String remainingPath( StringTokenizer tokens, 
@@ -89,17 +91,19 @@ public class Resource {
     
     return remainder;
   }
-  
-  private void addDirectoryIndexToAbsolutePath() {
+
+  private void tryAppendDirectoryIndex() {
     directoryIndex = "";
     
-    while( directoryIndex.equals("") && indexes.hasNext() ) {
+    while( indexes.hasNext() ) {
       directoryIndex = indexes.next();
+      
+      if( Files.exists( Paths.get( absolutePath + directoryIndex ) ) ) {
+        absolutePath += directoryIndex;
+      }
     }
-    
-    absolutePath += directoryIndex;
-  }
-  
+  } 
+
   private boolean isAlias( String path ) {
     return conf.lookupAlias( path ) != null ;
   }
@@ -150,17 +154,8 @@ public class Resource {
     return accessFilePath;
   }
 
-  public boolean hasMoreIndex() {
-    return indexes.hasNext();
-  }
-
-  public String getIndex() {
-    directoryIndex = indexes.next();
-    return directoryIndex;
-  }
-
-  public boolean isFile() {
-    return isFile;
+  public boolean exists() {
+    return exists;
   }
 
   public ListIterator<String> getIndexes() {
