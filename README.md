@@ -22,5 +22,5 @@ Open a browser to
 
 Authenticate using the folowing credentials:
 
-    username: demo
+    username: myuser
     password: password
